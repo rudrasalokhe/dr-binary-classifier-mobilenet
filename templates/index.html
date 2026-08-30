@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-powered retinal disease screening — upload fundus images for instant classification." />
+  <title>RetinaScope</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- top accent line -->
+  <div class="accent-line" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">
+        <div class="nav-logo">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8.5" stroke="url(#g1)" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r="4" stroke="url(#g1)" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r="1.5" fill="url(#g1)"/>
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="20" y2="20"><stop stop-color="#34d399"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+          </svg>
+        </div>
+        <span>RetinaScope</span>
+      </a>
+      <div class="nav-right">
+        <span class="nav-badge">v1.0 — Research</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <!-- HERO — only shows before first analysis -->
+    <header class="hero" id="hero">
+      <h1 class="hero-title">Retinal Disease<br/><span>Screening</span></h1>
+      <p class="hero-sub">Upload a fundus photograph. Our CNN pipeline runs preprocessing, classification, and returns results in seconds.</p>
+    </header>
+
+    <!-- UPLOAD CARD -->
+    <section class="upload-card" id="upload-card">
+      <div class="dropzone" id="dropzone" tabindex="0">
+        <div class="dropzone-idle" id="dropzone-idle">
+          <div class="dropzone-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242"/>
+              <path d="M12 12v9"/>
+              <path d="M8 17l4-5 4 5"/>
+            </svg>
+          </div>
+          <p class="dropzone-label">Drop fundus image here, or <label for="file-input" class="dropzone-link">browse</label></p>
+          <p class="dropzone-hint">PNG, JPG, BMP, TIFF — max 16 MB</p>
+          <input type="file" id="file-input" accept="image/*" hidden />
+        </div>
+        <div class="dropzone-preview" id="dropzone-preview" hidden>
+          <img id="preview-img" alt="Uploaded image" />
+          <div class="preview-overlay">
+            <button class="preview-remove" id="remove-btn" title="Remove">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" id="analyze-btn" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        Analyze scan
+      </button>
+    </section>
+
+    <!-- PROCESSING STATE -->
+    <section class="processing" id="processing" hidden>
+      <div class="pipeline">
+        <div class="pipeline-title">Processing Pipeline</div>
+        <div class="pipeline-steps">
+          <div class="step" id="step-0"><span class="step-dot"></span><span class="step-name">Green Channel</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="step-1"><span class="step-dot"></span><span class="step-name">CLAHE</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="step-2"><span class="step-dot"></span><span class="step-name">Denoise</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="step-3"><span class="step-dot"></span><span class="step-name">Segmentation</span></div>
+          <div class="step-line"></div>
+          <div class="step" id="step-4"><span class="step-dot"></span><span class="step-name">CNN Inference</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="results" id="results" hidden>
+      <div class="results-grid">
+        <!-- Left: uploaded image -->
+        <div class="results-image">
+          <img id="result-img" alt="Analyzed fundus image" />
+          <div class="results-image-label">Input scan</div>
+        </div>
+
+        <!-- Right: analysis -->
+        <div class="results-analysis">
+          <div class="result-badge" id="result-badge">
+            <span class="result-badge-dot" id="result-dot"></span>
+            <span class="result-badge-text" id="result-badge-text"></span>
+          </div>
+
+          <h2 class="result-class" id="result-class"></h2>
+          <p class="result-conf" id="result-conf"></p>
+
+          <div class="chart" id="chart"></div>
+
+          <button class="btn-secondary" id="reset-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 3v6h6"/></svg>
+            New analysis
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="disclaimer">⚠ This is a student research project — not a medical diagnostic tool. Do not use for clinical decision-making.</p>
+      <p class="footer-meta">CNN Model · 4-class classifier · Trained on synthetic fundus data</p>
+    </div>
+  </footer>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
