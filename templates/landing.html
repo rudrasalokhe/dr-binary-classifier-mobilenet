@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-powered retinal disease screening — startup landing page." />
+  <title>RetinaScope AI | Next-Gen Disease Detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/landing.css" />
+</head>
+<body>
+  <!-- animated background -->
+  <div class="bg-gradient"></div>
+  <div class="glass-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8.5" stroke="url(#logo-grad)" stroke-width="1.5"/>
+          <circle cx="10" cy="10" r="4" stroke="url(#logo-grad)" stroke-width="1.5"/>
+          <circle cx="10" cy="10" r="1.5" fill="url(#logo-grad)"/>
+          <defs><linearGradient id="logo-grad" x1="0" y1="0" x2="20" y2="20"><stop stop-color="#4ade80"/><stop offset="1" stop-color="#3b82f6"/></linearGradient></defs>
+        </svg>
+        <span class="logo-text">RetinaScope AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="/app" class="btn-primary-nav">Launch App</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="hero-content">
+        <div class="badge">🚀 Introducing RetinaScope 2.0</div>
+        <h1 class="hero-title">Early Detection,<br><span class="text-gradient">Brighter Vision.</span></h1>
+        <p class="hero-subtitle">Harness the power of our state-of-the-art CNN pipeline to detect Diabetic Retinopathy, Glaucoma, and AMD in seconds with unprecedented accuracy.</p>
+        <div class="hero-actions">
+          <a href="/app" class="btn-primary">Try it for Free <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#features" class="btn-secondary">Learn More</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="glass-panel">
+          <div class="mockup-header">
+            <div class="mockup-dot red"></div>
+            <div class="mockup-dot yellow"></div>
+            <div class="mockup-dot green"></div>
+          </div>
+          <div class="mockup-body">
+            <div class="mockup-img-placeholder">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </div>
+            <div class="mockup-lines">
+              <div class="line w-100"></div>
+              <div class="line w-75"></div>
+              <div class="line w-50"></div>
+            </div>
+            <div class="mockup-scan-line"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="features" class="features">
+      <h2 class="section-title">Why Choose <span class="text-gradient">RetinaScope</span></h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Lightning Fast</h3>
+          <p>Get diagnostic results in under 2 seconds, empowering quick clinical decisions without the wait.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔬</div>
+          <h3>High Accuracy</h3>
+          <p>Trained on vast synthetic and real datasets utilizing a robust 4-class CNN architecture.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Clinical Pipeline</h3>
+          <p>Advanced pre-processing including FOV Masking, CLAHE, and Morphological feature extraction.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-logo">RetinaScope AI</div>
+      <div class="footer-text">© 2026 RetinaScope AI. A student research initiative.</div>
+    </div>
+  </footer>
+</body>
+</html>

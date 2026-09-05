@@ -48,39 +48,62 @@ def extract_green_channel(img):
     # Green channel has the best vessel/lesion contrast in fundus images
     return img[:, :, 1]
 
-def apply_clahe(gray_img):
-    clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
-    return clahe.apply(gray_img)
+def extract_fov_mask(gray_img):
+    """Extracts the circular Field of View (FOV) mask to ignore black borders."""
+    _, mask = cv2.threshold(gray_img, 10, 255, cv2.THRESH_BINARY)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15))
+    return cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
-def gaussian_denoise(img):
-    return cv2.GaussianBlur(img, (5, 5), 0)
+def correct_illumination(img_channel, mask):
+    """Corrects uneven illumination by subtracting a heavily blurred background estimate."""
+    bg = cv2.medianBlur(img_channel, 61)
+    diff = cv2.absdiff(img_channel, bg)
+    diff[mask == 0] = 0
+    return cv2.normalize(diff, None, 0, 255, cv2.NORM_MINMAX)
 
-def simple_vessel_segmentation(gray_img):
-    # Simple rule-based segmentation: edge map to highlight vessel/lesion
-    # boundaries, as noted in your "simple rule-based prediction" idea.
-    seg = cv2.Canny(gray_img, 40, 120)
-    seg = cv2.GaussianBlur(seg, (5, 5), 0)
-    return seg
+def apply_clahe(channel, clip_limit=2.5, grid_size=(8, 8)):
+    """Applies Contrast Limited Adaptive Histogram Equalization."""
+    clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=grid_size)
+    return clahe.apply(channel)
+
+def morphological_feature_extraction(enhanced_gray, mask):
+    """
+    Uses Top-Hat morphological operations to highlight retinal structures 
+    like blood vessels, microaneurysms, and exudates.
+    """
+    inv = cv2.bitwise_not(enhanced_gray)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+    tophat = cv2.morphologyEx(inv, cv2.MORPH_TOPHAT, kernel)
+    
+    # Enhance features and enforce mask
+    features = cv2.addWeighted(inv, 1.0, tophat, 1.5, 0)
+    features[mask == 0] = 0
+    return features
 
 def resize_and_normalize(img, size=IMG_SIZE):
-    img = cv2.resize(img, (size, size))
+    img = cv2.resize(img, (size, size), interpolation=cv2.INTER_LANCZOS4)
     return img.astype("float32") / 255.0
 
 def preprocess_fundus_image(img_bgr):
     """
-    Full pipeline matching training:
-    green channel -> CLAHE (contrast enhancement) -> Gaussian filter (noise reduction)
-    -> segmentation map -> stack [denoised, segmentation, grayscale] as 3 channels
-    -> resize + normalize
+    Advanced Clinical Preprocessing Pipeline:
+    1. Extract Green Channel (highest contrast for retinal structures)
+    2. FOV Masking (ignore dark background)
+    3. Illumination Equalization
+    4. CLAHE (Contrast Enhancement)
+    5. Morphological Feature Extraction (Top-Hat Transform)
     """
-    green = extract_green_channel(img_bgr)
-    enhanced = apply_clahe(green)
-    denoised = gaussian_denoise(enhanced)
-    seg = simple_vessel_segmentation(denoised)
     gray = to_grayscale(img_bgr)
-
-    # Combine 3 processed views into a 3-channel "image" the CNN can eat
-    stacked = np.stack([denoised, seg, gray], axis=-1)
+    green = extract_green_channel(img_bgr)
+    
+    # Pipeline execution
+    mask = extract_fov_mask(gray)
+    illum_corrected = correct_illumination(green, mask)
+    enhanced = apply_clahe(illum_corrected)
+    seg = morphological_feature_extraction(enhanced, mask)
+    
+    # Combine 3 processed views into a 3-channel tensor for CNN inference
+    stacked = np.stack([enhanced, seg, gray], axis=-1)
     return resize_and_normalize(stacked)
 
 
@@ -99,6 +122,10 @@ def _allowed(filename: str) -> bool:
 
 @app.route("/")
 def index():
+    return render_template("landing.html")
+
+@app.route("/app")
+def app_page():
     return render_template("index.html")
 
 

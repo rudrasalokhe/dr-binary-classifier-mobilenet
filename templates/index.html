@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
+
   <!-- top accent line -->
   <div class="accent-line" aria-hidden="true"></div>
 
@@ -41,7 +42,7 @@
     </header>
 
     <!-- UPLOAD CARD -->
-    <section class="upload-card" id="upload-card">
+    <section class="upload-card util-panel" id="upload-card">
       <div class="dropzone" id="dropzone" tabindex="0">
         <div class="dropzone-idle" id="dropzone-idle">
           <div class="dropzone-icon">
@@ -64,26 +65,23 @@
           </div>
         </div>
       </div>
-      <button class="btn-primary" id="analyze-btn" disabled>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      <button class="btn btn-primary" id="analyze-btn" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
         Analyze scan
       </button>
     </section>
 
     <!-- PROCESSING STATE -->
     <section class="processing" id="processing" hidden>
-      <div class="pipeline">
+      <div class="pipeline util-panel">
         <div class="pipeline-title">Processing Pipeline</div>
         <div class="pipeline-steps">
-          <div class="step" id="step-0"><span class="step-dot"></span><span class="step-name">Green Channel</span></div>
-          <div class="step-line"></div>
-          <div class="step" id="step-1"><span class="step-dot"></span><span class="step-name">CLAHE</span></div>
-          <div class="step-line"></div>
-          <div class="step" id="step-2"><span class="step-dot"></span><span class="step-name">Denoise</span></div>
-          <div class="step-line"></div>
-          <div class="step" id="step-3"><span class="step-dot"></span><span class="step-name">Segmentation</span></div>
-          <div class="step-line"></div>
-          <div class="step" id="step-4"><span class="step-dot"></span><span class="step-name">CNN Inference</span></div>
+          <div class="step-line-container"><div class="step-line-progress" id="step-progress"></div></div>
+          <div class="step" id="step-0"><span class="step-name">Green Channel</span></div>
+          <div class="step" id="step-1"><span class="step-name">CLAHE</span></div>
+          <div class="step" id="step-2"><span class="step-name">Denoise</span></div>
+          <div class="step" id="step-3"><span class="step-name">Segmentation</span></div>
+          <div class="step" id="step-4"><span class="step-name">CNN Inference</span></div>
         </div>
       </div>
     </section>
@@ -91,26 +89,26 @@
     <!-- RESULTS -->
     <section class="results" id="results" hidden>
       <div class="results-grid">
-        <!-- Left: uploaded image -->
-        <div class="results-image">
-          <img id="result-img" alt="Analyzed fundus image" />
+        <div class="results-image-col">
+          <div class="results-image">
+            <img id="result-img" alt="Analyzed fundus image" />
+          </div>
           <div class="results-image-label">Input scan</div>
         </div>
 
-        <!-- Right: analysis -->
-        <div class="results-analysis">
-          <div class="result-badge" id="result-badge">
-            <span class="result-badge-dot" id="result-dot"></span>
-            <span class="result-badge-text" id="result-badge-text"></span>
+        <div class="results-analysis-col">
+          <div class="result-header">
+            <div class="result-badge" id="result-badge">
+              <span class="result-badge-text" id="result-badge-text"></span>
+            </div>
+            <h2 class="result-class" id="result-class"></h2>
+            <p class="result-conf" id="result-conf"></p>
           </div>
-
-          <h2 class="result-class" id="result-class"></h2>
-          <p class="result-conf" id="result-conf"></p>
 
           <div class="chart" id="chart"></div>
 
-          <button class="btn-secondary" id="reset-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 3v6h6"/></svg>
+          <button class="btn btn-secondary" id="reset-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 3v6h6"/></svg>
             New analysis
           </button>
         </div>

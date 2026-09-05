@@ -89,19 +89,21 @@
     for (let i = 0; i < STEP_COUNT; i++) {
       $(`step-${i}`).classList.remove("active", "done");
     }
-    document.querySelectorAll(".step-line").forEach((l) => l.classList.remove("done"));
+    const progress = $("step-progress");
+    if (progress) progress.style.width = "0%";
 
     let current = 0;
-    const lines = document.querySelectorAll(".step-line");
 
     function tick() {
       if (current > 0) {
         $(`step-${current - 1}`).classList.remove("active");
         $(`step-${current - 1}`).classList.add("done");
-        if (lines[current - 1]) lines[current - 1].classList.add("done");
       }
       if (current < STEP_COUNT) {
         $(`step-${current}`).classList.add("active");
+        if (progress) {
+          progress.style.width = `${(current / (STEP_COUNT - 1)) * 100}%`;
+        }
         current++;
         stepTimer = setTimeout(tick, 600);
       }
@@ -116,7 +118,8 @@
       $(`step-${i}`).classList.remove("active");
       $(`step-${i}`).classList.add("done");
     }
-    document.querySelectorAll(".step-line").forEach((l) => l.classList.add("done"));
+    const progress = $("step-progress");
+    if (progress) progress.style.width = "100%";
   }
 
   // ─── State machine ─────────────────────────
