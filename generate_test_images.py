@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy as np
 
-CLASSES = ["Normal", "Diabetic_Retinopathy", "Glaucoma", "AMD"]
+CLASSES = ["Normal", "Diabetic_Retinopathy", "Glaucoma", "AMD", "Cataract"]
 OUT_DIR = os.path.join(os.path.dirname(__file__), "test_images")
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -18,6 +18,7 @@ def make_synthetic_fundus(label_idx, size=300):
         1: (14, (3, 8), (0, 0, 230)),            # DR: many small red dot hemorrhages
         2: (1, (40, 60), (210, 210, 210)),       # Glaucoma: one large pale cupped disc
         3: (5, (10, 20), (0, 210, 230)),         # AMD: few larger yellow deposits
+        4: (4, (25, 45), (140, 160, 180)),       # Cataract: hazy diffuse opacity
     }[label_idx]
 
     for _ in range(n_blobs):

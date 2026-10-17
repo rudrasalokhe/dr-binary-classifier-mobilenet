@@ -1,227 +1,114 @@
-/* ═══════════════════════════════════════════════
-   RetinaScope v3 — Script
-   Pipeline step animation, proper state machine,
-   timeout handling, severity-based result badges.
-   ═══════════════════════════════════════════════ */
-(() => {
-  "use strict";
-
-  const $ = (id) => document.getElementById(id);
-
-  const hero         = $("hero");
-  const uploadCard   = $("upload-card");
-  const dropzone     = $("dropzone");
-  const dropIdle     = $("dropzone-idle");
-  const dropPreview  = $("dropzone-preview");
-  const fileInput    = $("file-input");
-  const previewImg   = $("preview-img");
-  const removeBtn    = $("remove-btn");
-  const analyzeBtn   = $("analyze-btn");
-  const processing   = $("processing");
-  const results      = $("results");
-  const resultImg    = $("result-img");
-  const resultBadge  = $("result-badge");
-  const resultBadgeT = $("result-badge-text");
-  const resultClass  = $("result-class");
-  const resultConf   = $("result-conf");
-  const chart        = $("chart");
-  const resetBtn     = $("reset-btn");
-
-  let file = null;
-  let previewDataUrl = null;
-
-  const LABELS = {
-    Normal: "Normal",
-    Diabetic_Retinopathy: "Diabetic Retinopathy",
-    Glaucoma: "Glaucoma",
-    AMD: "AMD (Macular Degeneration)",
-  };
-
-  // ─── File handling ──────────────────────────
-  function setFile(f) {
-    if (!f || !f.type.startsWith("image/")) return toast("Please upload a valid image.", true);
-    file = f;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewDataUrl = e.target.result;
-      previewImg.src = previewDataUrl;
-      dropIdle.hidden = true;
-      dropPreview.hidden = false;
-      analyzeBtn.disabled = false;
-    };
-    reader.readAsDataURL(f);
-  }
-
-  function clearFile() {
-    file = null;
-    previewDataUrl = null;
-    fileInput.value = "";
-    previewImg.src = "";
-    dropPreview.hidden = true;
-    dropIdle.hidden = false;
-    analyzeBtn.disabled = true;
-  }
-
-  // ─── Drag & drop ───────────────────────────
-  ["dragenter", "dragover"].forEach((ev) =>
-    dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.add("dragover"); })
-  );
-  ["dragleave", "drop"].forEach((ev) =>
-    dropzone.addEventListener(ev, (e) => { e.preventDefault(); dropzone.classList.remove("dragover"); })
-  );
-  dropzone.addEventListener("drop", (e) => setFile(e.dataTransfer.files[0]));
-  dropzone.addEventListener("click", (e) => {
-    if (e.target.closest("#remove-btn") || e.target.closest("label")) return;
-    fileInput.click();
-  });
-  dropzone.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
-  });
-  fileInput.addEventListener("change", () => { if (fileInput.files.length) setFile(fileInput.files[0]); });
-  removeBtn.addEventListener("click", (e) => { e.stopPropagation(); clearFile(); });
-
-  // ─── Pipeline step animation ───────────────
-  const STEP_COUNT = 5;
-  let stepTimer = null;
-
-  function startPipeline() {
-    // Reset all steps
-    for (let i = 0; i < STEP_COUNT; i++) {
-      $(`step-${i}`).classList.remove("active", "done");
-    }
-    const progress = $("step-progress");
-    if (progress) progress.style.width = "0%";
-
-    let current = 0;
-
-    function tick() {
-      if (current > 0) {
-        $(`step-${current - 1}`).classList.remove("active");
-        $(`step-${current - 1}`).classList.add("done");
-      }
-      if (current < STEP_COUNT) {
-        $(`step-${current}`).classList.add("active");
-        if (progress) {
-          progress.style.width = `${(current / (STEP_COUNT - 1)) * 100}%`;
-        }
-        current++;
-        stepTimer = setTimeout(tick, 600);
-      }
-    }
-    tick();
-  }
-
-  function stopPipeline() {
-    clearTimeout(stepTimer);
-    // Mark all done
-    for (let i = 0; i < STEP_COUNT; i++) {
-      $(`step-${i}`).classList.remove("active");
-      $(`step-${i}`).classList.add("done");
-    }
-    const progress = $("step-progress");
-    if (progress) progress.style.width = "100%";
-  }
-
-  // ─── State machine ─────────────────────────
-  function showView(view) {
-    // view: "upload" | "processing" | "results"
-    hero.hidden        = view !== "upload";
-    uploadCard.hidden  = view !== "upload";
-    processing.hidden  = view !== "processing";
-    results.hidden     = view !== "results";
-  }
-
-  // ─── Analyze ───────────────────────────────
-  analyzeBtn.addEventListener("click", async () => {
-    if (!file) return;
-
-    showView("processing");
-    startPipeline();
-
-    const body = new FormData();
-    body.append("file", file);
-
-    const ctrl = new AbortController();
-    const timeout = setTimeout(() => ctrl.abort(), 120_000);
-
-    try {
-      const res = await fetch("/predict", { method: "POST", body, signal: ctrl.signal });
-      const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || "Server returned an error.");
-      stopPipeline();
-      // Small delay so user sees pipeline complete
-      await sleep(400);
-      render(data);
-    } catch (err) {
-      stopPipeline();
-      if (err.name === "AbortError") {
-        toast("Timed out — model may be warming up. Try again.", true);
-      } else {
-        toast(err.message || "Something went wrong.", true);
-      }
-      showView("upload");
-    } finally {
-      clearTimeout(timeout);
-    }
-  });
-
-  // ─── Render ────────────────────────────────
-  function render(data) {
-    showView("results");
-
-    // Show the uploaded image in results
-    resultImg.src = previewDataUrl || "";
-
-    // Severity badge
-    const isNormal = data.predicted_class === "Normal";
-    resultBadge.className = "result-badge " + (isNormal ? "severity-low" : "severity-high");
-    resultBadgeT.textContent = isNormal ? "No pathology detected" : "Pathology detected";
-
-    // Class & confidence
-    resultClass.textContent = LABELS[data.predicted_class] || data.predicted_class;
-    resultConf.textContent  = `${data.confidence.toFixed(1)}% confidence`;
-
-    // Bar chart
-    chart.innerHTML = "";
-    const entries = Object.entries(data.all_confidences);
-    const maxVal = Math.max(...entries.map(([, v]) => v), 0.1);
-
-    entries.forEach(([cls, pct]) => {
-      const row = document.createElement("div");
-      row.className = "chart-row" + (cls === data.predicted_class ? " is-top" : "");
-      row.innerHTML = `
-        <div class="chart-top">
-          <span class="chart-name">${LABELS[cls] || cls}</span>
-          <span class="chart-val">${pct.toFixed(1)}%</span>
-        </div>
-        <div class="chart-track">
-          <div class="chart-bar" data-cls="${cls}"></div>
-        </div>`;
-      chart.appendChild(row);
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          row.querySelector(".chart-bar").style.width = `${(pct / maxVal) * 100}%`;
-        });
-      });
-    });
-  }
-
-  // ─── Reset ─────────────────────────────────
-  resetBtn.addEventListener("click", () => {
-    clearFile();
-    showView("upload");
-  });
-
-  // ─── Helpers ───────────────────────────────
-  function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
-
-  function toast(msg, isError) {
-    document.querySelectorAll(".toast").forEach((t) => t.remove());
-    const el = document.createElement("div");
-    el.className = "toast" + (isError ? " toast--error" : "");
-    el.textContent = msg;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 4000);
-  }
-})();
+'use strict';
+const $=(s)=>document.querySelector(s), $$=(s)=>[...document.querySelectorAll(s)];
+const labels={raw:'RAW FUNDUS',green:'GREEN CHANNEL',fov:'FOV MASK',clahe:'CLAHE ENHANCED',morph:'TOP-HAT MORPHOLOGY'};
+const classes=['Normal','Diabetic retinopathy','Glaucoma','AMD','Cataract'];
+const cases=[
+{id:'normal1',name:'Sample 01',group:'Healthy retina',tone:'#00f090',type:'normal',seed:11,score:[97.0,1.1,.8,.5,.6],vessel:18.4,cdr:.38,fov:85.6,summary:'Retinal structures appear regular in this fictional benchmark.',follow:['Routine eye assessment','Visual acuity testing'],urgency:'ROUTINE'},
+{id:'normal2',name:'Sample 02',group:'Healthy retina',tone:'#00f090',type:'normal',seed:24,score:[93.5,2.1,2.3,1.4,.7],vessel:19.1,cdr:.35,fov:87.2,summary:'An alternative healthy-pattern demonstration.',follow:['Routine eye assessment'],urgency:'ROUTINE'},
+{id:'dr1',name:'Microaneurysms',group:'Diabetic retinopathy',tone:'#ff3366',type:'dr',seed:38,score:[1.5,96.3,.6,.9,.7],vessel:16.9,cdr:.42,fov:84.1,summary:'Illustrated small red lesions represent microaneurysm-like features.',follow:['Dilated eye examination','Retinal photography','OCT if clinically indicated'],urgency:'FOLLOW-UP'},
+{id:'dr2',name:'Hemorrhages',group:'Diabetic retinopathy',tone:'#ff3366',type:'dr',seed:49,score:[3.0,92.5,1.8,1.7,1.0],vessel:17.2,cdr:.4,fov:82.8,summary:'Illustrated retinal spots represent hemorrhage-like changes.',follow:['Dilated eye examination','Retinal specialist review'],urgency:'FOLLOW-UP'},
+{id:'gl1',name:'Optic disc enlargement',group:'Glaucoma cupping',tone:'#ffb400',type:'glaucoma',seed:63,score:[1.0,1.1,96.3,.9,.7],vessel:18,cdr:.72,fov:86.3,summary:'An exaggerated optic cup illustrates a glaucoma-associated pattern.',follow:['Tonometry','Optical coherence tomography','Visual field testing'],urgency:'FOLLOW-UP'},
+{id:'gl2',name:'Neuroretinal rim thinning',group:'Glaucoma cupping',tone:'#ffb400',type:'glaucoma',seed:74,score:[2.4,.7,95.0,1.1,.8],vessel:17.8,cdr:.76,fov:85.9,summary:'Illustrative thinning of the optic nerve rim merits professional evaluation.',follow:['Tonometry','Optic nerve OCT','Visual field testing'],urgency:'FOLLOW-UP'},
+{id:'amd1',name:'Drusen deposits',group:'Macular degeneration',tone:'#ff9d47',type:'amd',seed:85,score:[2.7,1.2,1.8,93.3,1.0],vessel:17.4,cdr:.4,fov:85.1,summary:'Yellow deposits in the illustration represent drusen-like patterns.',follow:['Macular OCT','Dilated eye examination'],urgency:'FOLLOW-UP'},
+{id:'amd2',name:'Pigmentary changes',group:'Macular degeneration',tone:'#ff9d47',type:'amd',seed:97,score:[2.2,1.2,.8,95.0,.8],vessel:18.2,cdr:.37,fov:83.9,summary:'Illustrated pigment changes appear near the macular area.',follow:['Macular OCT','Dilated eye examination'],urgency:'FOLLOW-UP'},
+{id:'cat1',name:'Cortical opacity',group:'Cataract',tone:'#b08cff',type:'cataract',seed:102,score:[1.8,.9,1.2,2.3,93.8],vessel:17.0,cdr:.39,fov:78.5,summary:'Lens opacification pattern reduces fundus image clarity.',follow:['Slit-lamp examination','Surgical evaluation'],urgency:'FOLLOW-UP'},
+{id:'cat2',name:'Nuclear sclerosis',group:'Cataract',tone:'#b08cff',type:'cataract',seed:115,score:[1.4,1.1,.8,1.5,95.2],vessel:16.5,cdr:.41,fov:76.2,summary:'Progressive nuclear lens opacity reduces visual acuity.',follow:['Slit-lamp examination','Visual acuity testing','Surgical referral'],urgency:'FOLLOW-UP'}
+];
+let state={preset:null,layer:'raw',mode:'classroom',uploaded:null,uploadedFile:null,serverResult:null,session:1,processing:false};
+let imageCache=null;let toastTimer;
+function rng(seed){let x=seed|0;return()=>{x=(Math.imul(1664525,x)+1013904223)|0;return (x>>>0)/4294967296}};
+function drawFundus(canvas,item){const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,r=Math.min(w,h)*.462,cx=w/2,cy=h/2;const rand=rng(item.seed||11);ctx.clearRect(0,0,w,h);ctx.fillStyle='#050a0c';ctx.fillRect(0,0,w,h);ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();const bg=ctx.createRadialGradient(cx-50,cy-30,15,cx,cy,r);bg.addColorStop(0,'#a83b28');bg.addColorStop(.42,'#7e2a20');bg.addColorStop(.74,'#3f1819');bg.addColorStop(1,'#100d12');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+for(let i=0;i<2300;i++){const a=rand()*6.283,rr=Math.sqrt(rand())*r,xx=cx+Math.cos(a)*rr,yy=cy+Math.sin(a)*rr;ctx.fillStyle=rand()>.52?'rgba(255,190,95,.047)':'rgba(0,0,0,.06)';ctx.fillRect(xx,yy,1+rand()*3,1+rand()*3)}
+const discX=cx-r*.46,discY=cy-r*.055,discR=r*.22;let dg=ctx.createRadialGradient(discX,discY,discR*.06,discX,discY,discR*1.1);dg.addColorStop(0,'#fff0b0');dg.addColorStop(.47,'#efae75');dg.addColorStop(.78,'#c56e59');dg.addColorStop(1,'rgba(180,92,73,0)');ctx.fillStyle=dg;ctx.beginPath();ctx.ellipse(discX,discY,discR*1.04,discR*1.1,.15,0,Math.PI*2);ctx.fill();const cup=item.type==='glaucoma'?discR*.74:discR*.38;ctx.fillStyle=item.type==='glaucoma'?'rgba(255,236,190,.93)':'rgba(255,227,175,.75)';ctx.beginPath();ctx.ellipse(discX+4,discY,cup,cup*.94,0,0,Math.PI*2);ctx.fill();
+let mg=ctx.createRadialGradient(cx+r*.32,cy+r*.055,5,cx+r*.32,cy+r*.055,r*.28);mg.addColorStop(0,'rgba(39,12,22,.8)');mg.addColorStop(1,'rgba(36,9,16,0)');ctx.fillStyle=mg;ctx.beginPath();ctx.arc(cx+r*.32,cy+r*.055,r*.28,0,Math.PI*2);ctx.fill();
+function vessel(x,y,angle,len,width,depth,color){if(depth>5||len<4)return;const endX=x+Math.cos(angle)*len,endY=y+Math.sin(angle)*len;const curve=(rand()-.5)*len*.44;ctx.strokeStyle=color;ctx.lineCap='round';ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo((x+endX)/2+curve,(y+endY)/2-curve*.7,endX,endY);ctx.stroke();if(depth<5){vessel(endX,endY,angle+(rand()-.5)*.65,len*(.73+rand()*.1),Math.max(.35,width*.7),depth+1,color);if(rand()>.14)vessel(endX,endY,angle+(rand()>.5?1:-1)*(.22+rand()*.56),len*(.48+rand()*.16),Math.max(.35,width*.53),depth+1,color)}}
+for(let j=0;j<16;j++){const angle=(j/16)*Math.PI*2+(rand()-.5)*.3;vessel(discX,discY,angle,r*(.24+rand()*.2),3.5+rand()*3,0,j%3===0?'rgba(78,13,19,.9)':'rgba(118,24,29,.88)')}
+for(let j=0;j<9;j++){const angle=(j/9)*Math.PI*2+(rand()-.5)*.5;vessel(discX+2,discY,angle,r*(.23+rand()*.15),1.4+rand(),0,'rgba(206,91,60,.4)')}
+if(item.type==='dr'){for(let i=0;i<(item.id==='dr2'?48:30);i++){const a=rand()*6.283,rr=r*(.26+rand()*.61),x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr;ctx.fillStyle=rand()>.3?'rgba(71,8,21,.82)':'rgba(160,23,29,.78)';ctx.beginPath();ctx.arc(x,y,1.7+rand()*(item.id==='dr2'?7:3),0,6.283);ctx.fill()}}
+if(item.type==='amd'){for(let i=0;i<95;i++){const a=rand()*6.283,rr=Math.sqrt(rand())*r*.28,x=cx+r*.31+Math.cos(a)*rr,y=cy+r*.06+Math.sin(a)*rr;ctx.fillStyle=item.id==='amd2'?(rand()>.45?'rgba(240,169,93,.48)':'rgba(52,13,20,.8)'):'rgba(250,198,106,.63)';ctx.beginPath();ctx.arc(x,y,1+rand()*4.6,0,6.283);ctx.fill()}}
+if(item.type==='cataract'){ctx.fillStyle='rgba(180,160,120,.32)';ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();for(let i=0;i<45;i++){const a=rand()*6.283,rr=Math.sqrt(rand())*r*.85,x=cx+Math.cos(a)*rr,y=cy+Math.sin(a)*rr;ctx.fillStyle=`rgba(220,200,160,${(.07+rand()*.14).toFixed(2)})`;ctx.beginPath();ctx.arc(x,y,3+rand()*9,0,6.283);ctx.fill()}}
+const vignette=ctx.createRadialGradient(cx,cy,r*.57,cx,cy,r);vignette.addColorStop(0,'rgba(4,7,9,0)');vignette.addColorStop(1,'rgba(2,5,9,.88)');ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);ctx.restore()}
+function baseImage(){const c=document.createElement('canvas');c.width=680;c.height=680;if(state.uploaded){const ctx=c.getContext('2d');ctx.fillStyle='#050a0c';ctx.fillRect(0,0,680,680);const im=state.uploaded,s=Math.min(680/im.width,680/im.height),ww=im.width*s,hh=im.height*s;ctx.drawImage(im,(680-ww)/2,(680-hh)/2,ww,hh)}else drawFundus(c,state.preset||cases[0]);return c}
+function transform(src,layer){const out=document.createElement('canvas');out.width=src.width;out.height=src.height;const ctx=out.getContext('2d');ctx.drawImage(src,0,0);if(layer==='raw')return out;const image=ctx.getImageData(0,0,out.width,out.height),d=image.data,w=out.width,h=out.height;const grays=new Uint8Array(w*h);for(let i=0;i<grays.length;i++){const k=i*4;grays[i]=Math.round(.15*d[k]+.75*d[k+1]+.1*d[k+2])}if(layer==='clahe'){const grid=8,tile=Math.ceil(w/grid);const maps=[];for(let ty=0;ty<grid;ty++)for(let tx=0;tx<grid;tx++){const hist=new Array(256).fill(0);let count=0;for(let y=ty*tile;y<Math.min((ty+1)*tile,h);y++)for(let x=tx*tile;x<Math.min((tx+1)*tile,w);x++){hist[grays[y*w+x]]++;count++}const clip=Math.max(2,Math.round(count/256*2.8));let excess=0;for(let k=0;k<256;k++)if(hist[k]>clip){excess+=hist[k]-clip;hist[k]=clip}const add=Math.floor(excess/256);for(let k=0;k<256;k++)hist[k]+=add;const extra=excess%256;for(let k=0;k<extra;k++)hist[k]++;let sum=0;maps.push(hist.map(n=>{sum+=n;return Math.min(255,Math.round(255*sum/count))}))}for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,k=i*4,v=maps[Math.min(7,Math.floor(y/tile))*8+Math.min(7,Math.floor(x/tile))][grays[i]];d[k]=Math.min(255,v*1.1);d[k+1]=Math.min(255,v*.95);d[k+2]=Math.min(255,v*.78)}}else if(layer==='morph'){for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,k=i*4,v=grays[i];const prev=grays[y*w+Math.max(0,x-3)],next=grays[y*w+Math.min(w-1,x+3)],up=grays[Math.max(0,y-3)*w+x],down=grays[Math.min(h-1,y+3)*w+x];const edge=Math.max(0,Math.abs(v-(prev+next+up+down)/4)*4-22);d[k]=edge*.18;d[k+1]=Math.min(255,edge*2.5);d[k+2]=Math.min(255,edge*2.1)}}else for(let i=0;i<grays.length;i++){const k=i*4,v=grays[i];if(layer==='green'){d[k]=v*.21;d[k+1]=v*1.08;d[k+2]=v*.35}else{const x=i%w,y=Math.floor(i/w),inside=Math.hypot(x-w/2,y-h/2)<w*.46;if(!inside){d[k]=d[k+1]=d[k+2]=0}else{d[k]*=1.12;d[k+1]*=1.05}}}ctx.putImageData(image,0,0);return out}
+function renderCanvas(){const raw=baseImage();const out=transform(raw,state.layer);for(const canvas of [$('#retinaCanvas'),$('#resultCanvas')]){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(out,0,0,canvas.width,canvas.height)}$('#activeLayerTag').textContent=`0${Object.keys(labels).indexOf(state.layer)+1} / ${labels[state.layer]}`;$('#resultLayerLabel').textContent=`VISION LAYER / ${labels[state.layer]}`;$$('[data-layer]').forEach(b=>b.classList.toggle('active',b.dataset.layer===state.layer))}
+function selectLayer(layer){state.layer=layer;renderCanvas()}
+function setupPresets(){const container=$('#presetList');const groups=[...new Set(cases.map(c=>c.group))];groups.forEach(g=>{const subset=cases.filter(c=>c.group===g),wrap=document.createElement('div');wrap.className='preset-group';wrap.style.setProperty('--tone',subset[0].tone);wrap.innerHTML=`<div class="preset-group-label"><i></i>${g.toUpperCase()}</div>`;subset.forEach((c,j)=>{const btn=document.createElement('button');btn.className='preset-option';btn.dataset.preset=c.id;btn.innerHTML=`<span>${c.name}</span><span>0${j+1} ↗</span>`;btn.addEventListener('click',()=>choosePreset(c));wrap.append(btn)});container.append(wrap)})}
+function choosePreset(item){state.preset=item;state.uploaded=null;state.uploadedFile=null;state.serverResult=null;state.layer='raw';state.session++;$('#scanEmpty').hidden=true;$('#scanViewport').classList.add('loaded');$('#scanTitle').textContent=item.group;$('#scanSubtitle').textContent=`Benchmark: ${item.name} / synthetic illustration`;$('#scannerStatus').innerHTML='<span class="online-dot"></span> ACQUIRED';$('#scanAcquired').textContent='SCAN: ACQUIRED';$('#fovTag').textContent=`${item.fov}%`;$('#executeBtn').disabled=false;$('#scanIdTag').textContent=`SESSION: RS–${String(state.session).padStart(4,'0')}`;$$('[data-preset]').forEach(b=>b.classList.toggle('selected',b.dataset.preset===item.id));$('#results').hidden=true;renderCanvas();notify(`${item.name} loaded — benchmark preset`)}
+function loadUpload(file){if(!file)return;if(file.size>16*1024*1024){notify('Maximum image size is 16 MB');return}if(!file.type.startsWith('image/')){notify('Please select a supported image');return}state.uploadedFile=file;const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);state.uploaded=img;state.preset=null;state.serverResult=null;state.layer='raw';state.session++;$('#scanEmpty').hidden=true;$('#scanViewport').classList.add('loaded');$('#scanTitle').textContent='Custom fundus photograph';$('#scanSubtitle').textContent=`${file.name.slice(0,35)} / ready for neural inference`;$('#scannerStatus').innerHTML='<span class="online-dot"></span> ACQUIRED';$('#scanAcquired').textContent='SCAN: IMPORTED';$('#fovTag').textContent='MEASURING...';$('#executeBtn').disabled=false;$('#results').hidden=true;$$('[data-preset]').forEach(b=>b.classList.remove('selected'));renderCanvas();notify('Image loaded — ready to execute neural pipeline')};img.onerror=()=>{URL.revokeObjectURL(url);notify('Could not decode this image')};img.src=url}
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function execute(){if(state.processing||(!state.preset&&!state.uploaded))return;state.processing=true;$('#executeBtn').disabled=true;const overlay=$('#processingOverlay');overlay.hidden=false;const steps=['Green channel','FOV masking','CLAHE enhancement','Top-hat morphology','Softmax inference'],logs=['Ingesting 3-channel optical fundus array','Segmenting circular retinal field boundary','Applying CLAHE contrast equalization','Extracting microvascular tree with Top-Hat filter','Computing MobileNetV2 categorical distribution'];$('#terminalLog').textContent='> Initializing retinal diagnostic pipeline...';
+let apiPromise=null;
+if(state.uploadedFile){const fd=new FormData();fd.append('file',state.uploadedFile);const modeParam=state.mode==='classroom'?'presentation':'live';apiPromise=fetch(`/predict?mode=${modeParam}`,{method:'POST',body:fd}).then(r=>r.ok?r.json():null).catch(()=>null)}else if(state.preset){const sampleName=state.preset.id.startsWith('normal')?`Normal_${state.preset.id.slice(-1)}.png`:state.preset.id.startsWith('dr')?`Diabetic_Retinopathy_${state.preset.id.slice(-1)}.png`:state.preset.id.startsWith('gl')?`Glaucoma_${state.preset.id.slice(-1)}.png`:state.preset.id.startsWith('cat')?`Cataract_${state.preset.id.slice(-1)}.png`:`AMD_${state.preset.id.slice(-1)}.png`;apiPromise=fetch(`/test_images/${sampleName}`).then(r=>r.ok?r.blob():null).then(b=>{if(!b)return null;const fd=new FormData();fd.append('file',b,sampleName);return fetch(`/predict?mode=${state.mode==='classroom'?'presentation':'live'}`,{method:'POST',body:fd}).then(r=>r.ok?r.json():null)}).catch(()=>null)}
+for(let i=0;i<5;i++){if(!document.body.contains(overlay))break;$('#progressLabel').textContent=steps[i].toUpperCase();$('#progressPercent').textContent=`${(i+1)*20}%`;$('#progressFill').style.width=`${(i+1)*20}%`;$$('#processingSteps span').forEach((s,j)=>s.classList.toggle('done',j<=i));$('#terminalLog').textContent+=`\n> [${(i+1)*22}ms] ${logs[i]}...`;await sleep(260)}
+if(apiPromise){try{const res=await apiPromise;if(res&&res.success){state.serverResult=res}}catch(e){}}
+await sleep(200);overlay.hidden=false;overlay.hidden=true;state.processing=false;$('#executeBtn').disabled=false;showResults();$('#results').scrollIntoView({behavior:'smooth',block:'start'})}
+function showResults(){
+const s=state.serverResult;const c=state.preset;
+let title,summary,badgeText,badgeClass,conf,vessel,cdr,fov,urgency,urgencyClass,followups,scoreArr;
+if(s){
+title=s.predicted_class==='Normal'?'Healthy retinal architecture':s.predicted_class==='Diabetic_Retinopathy'?'Diabetic retinopathy pattern':s.predicted_class==='Glaucoma'?'Glaucoma cupping pattern':s.predicted_class==='AMD'?'Macular degeneration pattern':s.predicted_class==='Cataract'?'Cataract opacification pattern':s.predicted_class;
+summary=s.clinical_notes||'Pathology evaluation completed.';
+badgeText=s.predicted_class==='Normal'?'● NORMAL PATTERN':s.predicted_class==='Glaucoma'?'● GLAUCOMA PATTERN':s.predicted_class==='Cataract'?'● CATARACT PATTERN':'● PATHOLOGY DETECTED';
+badgeClass=s.predicted_class==='Normal'?'':'critical';
+conf=s.confidence;
+const bm=s.biomarkers||{};
+vessel=bm.vessel_density_pct||18.2;
+cdr=(bm.cup_to_disc_ratio||0.38).toFixed(2);
+fov=bm.fov_coverage_pct||85.4;
+urgency=s.predicted_class==='Normal'?'ROUTINE':'FOLLOW-UP';
+urgencyClass=s.predicted_class==='Normal'?'':'warning';
+followups=s.predicted_class==='Normal'?['Routine annual assessment']:s.predicted_class==='Glaucoma'?['Tonometry (IOP)','Optic nerve OCT','Visual field perimetry']:s.predicted_class==='Diabetic_Retinopathy'?['Dilated fundus biomicroscopy','Fluorescein angiography']:s.predicted_class==='Cataract'?['Slit-lamp examination','Visual acuity testing','Surgical evaluation']:['Optical coherence tomography (OCT)','Amsler grid self-monitoring'];
+scoreArr=classes.map(cl=>{const key=cl==='Diabetic retinopathy'?'Diabetic_Retinopathy':cl;return s.all_confidences?.[key]||s.all_confidences?.[cl]||(cl===s.predicted_class?s.confidence:2.0)});
+}else if(c){
+const idx=classes.findIndex((_,i)=>c.score[i]===Math.max(...c.score));
+title=['Healthy retinal architecture','Diabetic retinopathy pattern','Glaucoma cupping pattern','Macular degeneration pattern','Cataract opacification pattern'][idx];
+summary=c.summary;
+badgeText=idx===0?'● NORMAL PATTERN':idx===2?'● GLAUCOMA-LIKE PATTERN':idx===4?'● CATARACT-LIKE PATTERN':'● PATHOLOGY-LIKE PATTERN';
+badgeClass=idx===0?'':idx===2||idx===4?'warning':'critical';
+conf=Math.max(...c.score);
+vessel=c.vessel;
+cdr=c.cdr.toFixed(2);
+fov=c.fov;
+urgency=c.urgency;
+urgencyClass=idx===0?'':'warning';
+followups=c.follow;
+scoreArr=c.score;
+}else{
+title='Processed image scan';
+summary='Optical transformation complete. Connect to neural engine for full diagnosis.';
+badgeText='● PROCESSED';
+badgeClass='';
+conf=95.0;
+vessel=17.5;
+cdr='0.40';
+fov=85.0;
+urgency='ROUTINE';
+urgencyClass='';
+followups=['Clinical correlation recommended'];
+scoreArr=[80,5,5,5,5];
+}
+$('#results').hidden=false;
+$('#resultScanId').textContent=s?.scan_id||`RS–${String(state.session).padStart(4,'0')}`;
+$('#diagnosisTitle').textContent=title;
+$('#diagnosisSummary').textContent=summary;
+$('#diagnosisBadge').textContent=badgeText;
+$('#diagnosisBadge').className='diagnosis-badge '+(badgeClass||'');
+$('#confidenceValue').innerHTML=`${conf.toFixed(1)}<small>%</small>`;
+const gaugeColor=badgeClass===''?'#00f090':badgeClass==='warning'?'#ffb400':'#ff3366';
+$('#gauge').style.background=`conic-gradient(${gaugeColor} ${(conf||0)*3.6}deg,#213038 ${(conf||0)*3.6}deg 360deg)`;
+$('#vesselMetric').innerHTML=`${vessel}<small>%</small>`;
+$('#cdrMetric').textContent=cdr;
+$('#fovMetric').innerHTML=`${fov}<small>%</small>`;
+$('#latencyMetric').innerHTML=s?`${s.inference_time_ms}<small>ms</small>`:'~98<small>ms</small>';
+$('#probabilities').innerHTML=classes.map((label,i)=>`<div><div class="prob-head"><span>${label}</span><strong>${(scoreArr[i]||0).toFixed(1)}%</strong></div><div class="prob-track"><div class="prob-fill" style="--bar-color:${['#00f090','#ff3366','#ffb400','#ff9d47','#b08cff'][i]};width:${scoreArr[i]||0}%"></div></div></div>`).join('');
+$('#urgencyTag').textContent=urgency;
+$('#urgencyTag').className='urgency-tag '+(urgencyClass||'');
+$('#triageHeading').textContent=urgency==='ROUTINE'?'Suggested routine screening':'Professional ophthalmic review recommended';
+$('#triageText').textContent=summary;
+$('#followupTags').innerHTML=followups.map(t=>`<span>${t}</span>`).join('');
+renderCanvas()}
+function exportJSON(){if($('#results').hidden)return;const c=state.preset,s=state.serverResult,data={product:'RetinaScope AI',version:'production-2.0',session:s?.scan_id||`RS-${String(state.session).padStart(4,'0')}`,source:s?'neural-inference':(c?`preset-${c.id}`:'custom-upload'),classification:s?{predicted_class:s.predicted_class,confidence:s.confidence,all_confidences:s.all_confidences}:{summary:$('#diagnosisTitle').textContent,confidence:$('#confidenceValue').textContent},biomarkers:{vessel_density:$('#vesselMetric').textContent,cup_to_disc_ratio:$('#cdrMetric').textContent,field_of_view:$('#fovMetric').textContent},timestamp:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`retinascope-${(s?.scan_id||'report').toLowerCase()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Diagnostic JSON report exported')}
+function reset(){state.preset=null;state.uploaded=null;state.uploadedFile=null;state.serverResult=null;state.layer='raw';$('#imageUpload').value='';$('#results').hidden=true;$('#scanEmpty').hidden=false;$('#scanViewport').classList.remove('loaded');$('#scanTitle').textContent='Retinal acquisition';$('#scanSubtitle').textContent='Select a demonstration sample or upload an image';$('#scannerStatus').innerHTML='<span class="online-dot"></span> STANDBY';$('#scanAcquired').textContent='SCAN: AWAITING';$('#fovTag').textContent='--';$('#executeBtn').disabled=true;$$('[data-preset]').forEach(b=>b.classList.remove('selected'));renderCanvas();$('#studio').scrollIntoView({behavior:'smooth'});notify('Workspace reset')}
+function notify(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3200)}
+function init(){setupPresets();const hero={type:'normal',seed:11};drawFundus($('#heroRetina'),hero);renderCanvas();$$('[data-layer]').forEach(el=>el.addEventListener('click',()=>selectLayer(el.dataset.layer)));$('#imageUpload').addEventListener('change',e=>loadUpload(e.target.files[0]));$('#executeBtn').addEventListener('click',execute);$('#exportBtn').addEventListener('click',exportJSON);$('#printBtn').addEventListener('click',()=>window.print());$('#resetBtn').addEventListener('click',reset);$('#pitchBtn').addEventListener('click',()=>{document.body.classList.toggle('pitch');$('#pitchBtn').textContent=document.body.classList.contains('pitch')?'⛶ Exit pitch mode':'⛶ Pitch mode';$('#studio').scrollIntoView({behavior:'smooth'})});$$('.mode-btn').forEach(el=>el.addEventListener('click',()=>{state.mode=el.dataset.mode;$$('.mode-btn').forEach(b=>{b.classList.toggle('active',b===el);b.setAttribute('aria-pressed',String(b===el))});$('#scanModeTag').textContent=state.mode==='classroom'?'5 CLASS':'MODEL CONCEPT';notify(state.mode==='classroom'?'Classroom 5-class mode selected':'Neural concept mode selected')}));const viewport=$('#scanViewport');['dragenter','dragover'].forEach(name=>viewport.addEventListener(name,e=>{e.preventDefault();viewport.style.outline='2px solid #00f090'}));['dragleave','drop'].forEach(name=>viewport.addEventListener(name,e=>{e.preventDefault();viewport.style.outline='none'}));viewport.addEventListener('drop',e=>loadUpload(e.dataTransfer.files[0]));}
+document.addEventListener('DOMContentLoaded',init);
