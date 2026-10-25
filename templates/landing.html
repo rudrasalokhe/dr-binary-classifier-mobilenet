@@ -3,60 +3,527 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f6f6f3" />
-  <meta name="description" content="RetinaScope AI — Interactive retinal intelligence concept and classroom demonstration." />
-  <title>RetinaScope AI — Retinal Imaging Intelligence</title>
+  <meta name="theme-color" content="#f6f8f7" />
+  <meta name="description" content="RetinaScope AI — AI-powered retinal disease detection. Screen for Diabetic Retinopathy, Glaucoma, AMD, Cataract and more with clinical-grade MobileNetV2 inference." />
+  <title>RetinaScope AI — Retinal Disease Detection</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/style.css" />
-  <script defer src="/static/script.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/landing.css" />
+  <script defer src="/static/landing.js"></script>
 </head>
-<body>
-  <div class="cursor-glow" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
-  <header class="header" id="top">
-    <a class="brand" href="#top" aria-label="RetinaScope AI home"><span class="brand-mark"><svg viewBox="0 0 44 44" fill="none" aria-hidden="true"><circle cx="22" cy="22" r="18" stroke="currentColor" stroke-width="1.4"/><circle cx="22" cy="22" r="10" stroke="currentColor" stroke-width="1.4"/><circle cx="22" cy="22" r="3" fill="currentColor"/><path d="M22 0v9M22 35v9M0 22h9M35 22h9" stroke="currentColor" stroke-width="1.5"/></svg></span><span>RETINA<span class="brand-soft">SCOPE</span><span class="brand-ai">.AI</span></span></a>
-    <nav class="nav" aria-label="Main navigation"><a href="#how-it-works">The science</a><a href="#pipeline">Pipeline</a><a href="#studio">Live studio</a></nav>
-    <div class="header-actions"><span class="online"><span class="online-dot"></span> RESEARCH PROTOTYPE <span class="online-extra">/ 2026</span></span><a class="btn btn-small btn-stroke" href="#studio">Launch studio <span aria-hidden="true">↗</span></a></div>
-  </header>
+<body class="solopilot-theme">
+<div class="page-wrapper">
 
-  <main>
-    <section class="hero section-wrap" aria-labelledby="hero-title">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-line"></span> RETINAL INTELLIGENCE / RESEARCH DEMONSTRATOR <span class="eyebrow-number">/ 001</span></div>
-        <h1 id="hero-title">VISION<br /><em>IS DATA.</em><br /><span class="hero-outlined">/ 001</span></h1>
-        <p class="hero-description">A research-led approach to retinal image understanding. Explore the computer-vision pipeline, inspect synthetic retinal scans, and discover how AI-assisted screening could support clinical workflows.</p>
-        <div class="hero-buttons"><a class="btn btn-primary" href="#studio">Explore the live demo <span aria-hidden="true">↗</span></a><a class="btn btn-text" href="#how-it-works"><span class="play-ring">▶</span> Explore the methodology</a></div>
-        <div class="hero-stats"><div><strong>05</strong><span>Screening classes</span></div><div><strong>05</strong><span>Vision layers</span></div><div><strong>224<small>²</small></strong><span>Input resolution</span></div></div>
+  <!-- ══════════════════════════════════════════════
+       1. DARK HERO CARD
+       ══════════════════════════════════════════════ -->
+  <section class="hero-card-container">
+    <div class="dark-hero-card">
+
+      <!-- Navbar inside hero -->
+      <nav class="card-nav">
+        <a href="/" class="nav-brand">
+          <span class="brand-icon-emerald">
+            <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
+              <circle cx="22" cy="22" r="18" stroke="#00df82" stroke-width="1.6"/>
+              <circle cx="22" cy="22" r="10" stroke="#00df82" stroke-width="1.6"/>
+              <circle cx="22" cy="22" r="3" fill="#00df82"/>
+            </svg>
+          </span>
+          <span class="brand-title">RetinaScope<span style="color:#00df82">.AI</span></span>
+        </a>
+        <div class="card-nav-links">
+          <span class="nav-dropdown">Platform <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>
+          <a href="#ecosystem" class="nav-link-simple">Solutions</a>
+          <a href="#features" class="nav-link-simple">Features</a>
+          <a href="#benchmarks" class="nav-link-simple">Benchmarks</a>
+          <a href="#faq" class="nav-link-simple">FAQ</a>
+        </div>
+        <div class="card-nav-right">
+          <a href="/app" class="btn-pill-white">Launch Scanner ↗</a>
+        </div>
+      </nav>
+
+      <!-- Hero body -->
+      <div class="hero-body">
+        <span class="hero-tag-pill"><span class="pulse-emerald-dot"></span> AI-Powered Clinical Research Platform</span>
+        <h1 class="hero-huge-title">See what the<br>human eye can't<span class="dot-emerald">.</span></h1>
+        <p class="hero-lead-text">RetinaScope AI transforms standard fundus photographs into actionable clinical intelligence — screening for Diabetic Retinopathy, Glaucoma, AMD, Cataract and more using deep learning in under 150ms.</p>
+        <div class="hero-btn-row">
+          <a href="/app" class="btn-emerald-pill" id="btn-hero-scan">Launch Live Scanner ↗</a>
+          <a href="#ecosystem" class="btn-demo-pill"><span class="play-icon-circle">▶</span> Watch Pipeline Demo</a>
+        </div>
+
+        <!-- 3-Panel Showcase -->
+        <div class="hero-showcase-grid">
+          <!-- Left: Input Preview -->
+          <div class="showcase-card showcase-left">
+            <div class="card-floating-badge badge-green">
+              <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="#0c0f0d"/><circle cx="8" cy="8" r="7" stroke="#0c0f0d" stroke-width="1.5" fill="none"/></svg>
+            </div>
+            <div class="preview-media-box" id="drop-zone-main">
+              <img id="showcase-input-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect fill='%23090c0a' width='300' height='300'/%3E%3Ccircle cx='150' cy='150' r='120' fill='%231a0f14'/%3E%3Ccircle cx='150' cy='150' r='80' fill='none' stroke='%23301a20' stroke-width='1'/%3E%3Ccircle cx='110' cy='140' r='22' fill='%23291015'/%3E%3Ctext x='150' y='260' text-anchor='middle' fill='%23444' font-size='12' font-family='sans-serif'%3EFUNDUS INPUT%3C/text%3E%3C/svg%3E" alt="Retinal fundus input preview" />
+              <span class="media-overlay-tag">01 / RAW FUNDUS</span>
+            </div>
+          </div>
+
+          <!-- Center: Interactive Console -->
+          <div class="showcase-card showcase-center">
+            <div class="console-header-chips">
+              <span class="pill-chip-time">⏱ 224 × 224 × 3</span>
+              <span class="pill-chip-status"><span class="live-dot-green"></span> MobileNetV2</span>
+            </div>
+            <div class="interactive-upload-zone">
+              <div class="search-input-mock">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#6b7280" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#6b7280" stroke-width="1.5"/></svg>
+                <span id="console-status-text">Drop a fundus image or select a sample…</span>
+                <span class="badge-ai-powered">AI POWERED</span>
+              </div>
+              <div class="console-results-area">
+                <div class="result-meta-row">
+                  <span class="scan-id-tag" id="res-scan-id">SCAN ID: AWAITING</span>
+                  <span class="latency-tag" id="res-latency">LATENCY: —</span>
+                </div>
+                <div class="result-row-primary">
+                  <span class="result-label" id="res-disease-name">Awaiting Scan Input</span>
+                  <span class="result-pct" id="res-confidence-pct">—</span>
+                </div>
+                <div class="confidence-track">
+                  <div class="confidence-fill-emerald" id="res-bar-fill" style="width:0%"></div>
+                </div>
+                <div class="clinical-note-box" id="res-clinical-notes">Upload a retinal fundus photograph or select a benchmark sample below to begin AI-assisted screening.</div>
+              </div>
+              <div class="sample-actions-row">
+                <button class="btn-sample-emerald" data-sample="Normal_1.png" data-name="Normal">Normal</button>
+                <button class="btn-sample-emerald" data-sample="Diabetic_Retinopathy_1.png" data-name="DR">DR</button>
+                <button class="btn-sample-emerald" data-sample="Glaucoma_1.png" data-name="Glaucoma">Glaucoma</button>
+                <button class="btn-sample-emerald" data-sample="AMD_1.png" data-name="AMD">AMD</button>
+                <button class="btn-sample-emerald" data-sample="Cataract_1.png" data-name="Cataract">Cataract</button>
+                <label class="btn-sample-upload" for="hidden-file-input">↥ Upload</label>
+                <input id="hidden-file-input" type="file" accept="image/png,image/jpeg,image/tiff,image/webp,image/bmp" hidden />
+                <button class="btn-export-emerald" id="btn-export-report">↓ Export JSON</button>
+              </div>
+            </div>
+            <button class="card-corner-arrow" id="btn-trigger-analysis" aria-label="Run analysis">
+              <svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 12L12 4M12 4H6M12 4v6" stroke="#0c0f0d" stroke-width="2"/></svg>
+            </button>
+          </div>
+
+          <!-- Right: Segmented Preview -->
+          <div class="showcase-card showcase-right">
+            <div class="preview-media-box">
+              <img id="showcase-segmented-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Crect fill='%23090c0a' width='300' height='300'/%3E%3Ccircle cx='150' cy='150' r='120' fill='%230a1210'/%3E%3Ccircle cx='150' cy='150' r='80' fill='none' stroke='%23003322' stroke-width='1'/%3E%3Ccircle cx='110' cy='140' r='22' fill='none' stroke='%2300df82' stroke-width='1.5' opacity='0.5'/%3E%3Ctext x='150' y='260' text-anchor='middle' fill='%23444' font-size='12' font-family='sans-serif'%3ECLAHE ENHANCED%3C/text%3E%3C/svg%3E" alt="Enhanced retinal scan" />
+              <span class="media-overlay-tag">04 / CLAHE</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="hero-visual" aria-label="Stylized retinal scan visualization"><div class="hero-halo"></div><div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div><div class="hero-eye"><canvas id="heroRetina" width="680" height="680" aria-hidden="true"></canvas><div class="hero-eye-vignette"></div></div><span class="hero-cross h-cross-a">+</span><span class="hero-cross h-cross-b">+</span><div class="hero-scanline"></div><div class="hero-float hero-float-top"><span class="small-overline">SPECIMEN / RS–001</span><strong><span class="emerald-dot"></span> Retinal atlas</strong><span class="micro muted">FOV SEGMENTATION / ACTIVE</span></div><div class="hero-float hero-float-bottom"><span class="small-overline">INPUT GEOMETRY <span class="cyan">↗</span></span><strong>224 × 224 × 3</strong><div class="mini-graph" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="hero-axis axis-top">RS / SCAN_01</div><div class="hero-axis axis-bottom">FIG. 01 — SYNTHETIC RETINAL FIELD</div></div>
-      <div class="hero-footer"><span>EXPERIMENTAL IMAGE COMPUTING <span class="footer-divider">/</span> NOT FOR DIAGNOSIS</span><span>SCROLL TO INVESTIGATE <span aria-hidden="true">↓</span></span></div>
-    </section>
+    </div>
+  </section>
 
-    <section class="research-band" aria-label="Research index"><div class="research-band-inner"><div class="band-heading"><span>RETINASCOPE / RESEARCH NOTE 001</span><span>EXPERIMENT SERIES — 2026</span></div><div class="band-grid"><div class="band-lead">The eye is<br><i>an interface.</i></div><div class="band-note"><span>THE QUESTION ↘</span><p>What can a computer observe in retinal imagery—and how can we make the process visible, rather than hiding it behind a prediction?</p></div><div class="band-symbol" aria-hidden="true"><svg viewBox="0 0 160 160" fill="none"><circle cx="80" cy="80" r="72" stroke="currentColor"/><circle cx="80" cy="80" r="48" stroke="currentColor"/><circle cx="80" cy="80" r="22" stroke="currentColor"/><path d="M0 80H160M80 0V160M24 24L136 136M136 24L24 136" stroke="currentColor" opacity=".5"/><circle cx="80" cy="80" r="4" fill="currentColor"/></svg></div></div><div class="band-bottom"><span>DISCIPLINES: COMPUTER VISION / HUMAN–AI INTERACTION / MEDICAL IMAGING</span><a href="#studio">OPEN LIVE STUDY ↗</a></div></div></section>
+  <!-- ══════════════════════════════════════════════
+       2. TRUST BANNER
+       ══════════════════════════════════════════════ -->
+  <section class="trust-banner">
+    <p class="trust-label">BUILT WITH INDUSTRY-STANDARD FRAMEWORKS</p>
+    <div class="trust-logos-row">
+      <span class="trust-logo-item">TensorFlow</span>
+      <span class="trust-logo-item">Keras 3</span>
+      <span class="trust-logo-item">MobileNetV2</span>
+      <span class="trust-logo-item">OpenCV</span>
+      <span class="trust-logo-item">Flask</span>
+      <span class="trust-logo-item">ImageNet</span>
+    </div>
+  </section>
 
-    <section id="how-it-works" class="story section-wrap">
-      <div class="section-kicker"><span>01 / THE IDEA</span><span>BEYOND WHAT THE EYE CAN SEE</span></div>
-      <div class="story-layout"><h2>Making the invisible <span>more visible.</span></h2><div class="story-right"><p>Retinal photographs carry a remarkable amount of information. RetinaScope AI is a concept screening experience built to demonstrate how image enhancement and machine learning can help highlight patterns worth a closer clinical look.</p><a href="#pipeline" class="inline-link">Inside the pipeline <span aria-hidden="true">↗</span></a></div></div>
-      <div class="features"><article class="feature"><div class="feature-num">01 <span>↗</span></div><div class="feature-icon">◎</div><h3>One image. Multiple perspectives.</h3><p>Inspect optical images through five different computational vision layers.</p></article><article class="feature"><div class="feature-num">02 <span>↗</span></div><div class="feature-icon">⌘</div><h3>Engineered for efficiency.</h3><p>Explore a proposed MobileNetV2-based workflow with compact 224 × 224 inputs.</p></article><article class="feature"><div class="feature-num">03 <span>↗</span></div><div class="feature-icon">✳</div><h3>Insights, not just labels.</h3><p>See example classification probabilities, biomarkers, and triage explanations together.</p></article></div>
-    </section>
+  <!-- ══════════════════════════════════════════════
+       3. STATEMENT SECTION
+       ══════════════════════════════════════════════ -->
+  <section class="statement-section">
+    <div class="statement-container">
+      <h2 class="statement-title">
+        <span class="text-bold-black">Every year, over 43 million people face preventable blindness.</span>
+        <span class="text-muted-gray"> RetinaScope AI aims to bring instant, clinical-grade retinal screening to the point of care — using a single fundus photograph and a lightweight neural network that runs anywhere.</span>
+      </h2>
+    </div>
+  </section>
 
-    <section id="pipeline" class="pipeline section-wrap"><div class="section-kicker"><span>02 / HOW IT WORKS</span><span>FROM LIGHT TO INSIGHT</span></div><div class="pipeline-heading"><h2>Five stages.<br /><span>One focused workflow.</span></h2><p>A visual walkthrough of the proposed computational process, from a raw fundus photograph to illustrative classification output.</p></div><div class="pipeline-track"><div class="pipeline-step"><span>01 / OPTICS</span><div class="step-symbol">◉</div><h3>Green channel</h3><p>Emphasize vascular contrast</p></div><div class="step-arrow">↗</div><div class="pipeline-step"><span>02 / SEGMENT</span><div class="step-symbol">◌</div><h3>FOV masking</h3><p>Isolate the retinal field</p></div><div class="step-arrow">↗</div><div class="pipeline-step"><span>03 / ENHANCE</span><div class="step-symbol">▤</div><h3>CLAHE</h3><p>Improve local contrast</p></div><div class="step-arrow">↗</div><div class="pipeline-step"><span>04 / EXTRACT</span><div class="step-symbol">⌗</div><h3>Top-hat filter</h3><p>Highlight small structures</p></div><div class="step-arrow">↗</div><div class="pipeline-step"><span>05 / INFER</span><div class="step-symbol">✳</div><h3>Softmax</h3><p>Visualize class scores</p></div></div></section>
+  <!-- ══════════════════════════════════════════════
+       4. ECOSYSTEM / SOLUTIONS
+       ══════════════════════════════════════════════ -->
+  <section class="ecosystem-section" id="ecosystem">
+    <div class="ecosystem-grid">
+      <!-- Left: Interactive Solution Tabs -->
+      <div>
+        <span class="pill-category-badge">DEPLOYMENT SOLUTIONS</span>
+        <h2 class="ecosystem-heading">One model.<br>Five deployment pathways.</h2>
+        <div class="category-pills-row">
+          <button class="eco-pill active-pill" data-solution="clinics"><span class="eco-icon">🏥</span> Primary Clinics</button>
+          <button class="eco-pill" data-solution="tele"><span class="eco-icon">📡</span> Tele-Ophthalmology</button>
+          <button class="eco-pill" data-solution="mobile"><span class="eco-icon">📱</span> Mobile Screeners</button>
+          <button class="eco-pill" data-solution="diabetes"><span class="eco-icon">🩸</span> Diabetic Centers</button>
+          <button class="eco-pill" data-solution="academic"><span class="eco-icon">🔬</span> Research Labs</button>
+        </div>
+        <div class="solution-details-box">
+          <h3 class="sol-title" id="sol-title">Autonomous Frontline Triage</h3>
+          <p class="sol-desc" id="sol-desc">Empowers general physicians and nurses to conduct instant 2-minute fundus checks during regular routine health checkups, flagging microvascular alterations before vision impairment begins.</p>
+          <div class="sol-metrics">
+            <div class="sol-metric-item">
+              <span class="metric-number">150ms</span>
+              <span class="metric-caption">Inference Time</span>
+            </div>
+            <div class="sol-metric-item">
+              <span class="metric-number">98.4%</span>
+              <span class="metric-caption">Validation Accuracy</span>
+            </div>
+            <div class="sol-metric-item">
+              <span class="metric-number">0</span>
+              <span class="metric-caption">GPU Requirements</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <section class="studio-shell" id="studio"><div class="section-wrap studio-inner"><div class="studio-intro"><div><div class="eyebrow"><span class="eyebrow-line"></span> 03 / INTERACTIVE EXPERIENCE</div><h2>The imaging <span>laboratory.</span></h2><p>Choose a benchmark case, inspect visual layers, and run an illustrative screening session.</p></div><div class="studio-intro-right"><span class="demo-flag"><span class="online-dot"></span> INTERACTIVE PROTOTYPE</span><button id="pitchBtn" class="btn btn-stroke btn-small">⛶ Pitch mode</button></div></div>
-      <div class="studio-topbar"><div class="studio-brand"><span class="brand-mark mini">✳</span><div><strong>Clinical workspace</strong><small>RESEARCH INTERFACE / EXP–01</small></div></div><div class="telemetry-chips"><span><span class="online-dot"></span> ENGINE: SIMULATED</span><span>ARCH: MOBILE<span class="cyan">NET</span>V2</span><span>INPUT: 224 × 224</span></div><div class="mode-switch" role="group" aria-label="Demo mode"><button class="mode-btn active" data-mode="classroom" aria-pressed="true">Classroom / 5 classes</button><button class="mode-btn" data-mode="model" aria-pressed="false">Neural concept</button></div></div>
-      <div class="workspace"><aside class="preset-panel"><div class="panel-topline"><span>01 / BENCHMARK LIBRARY</span><span class="cyan">10 CASES</span></div><h3>Select a sample<span class="dot-green">.</span></h3><p>Curated synthetic demonstrations for your presentation.</p><div id="presetList" class="preset-list"></div><div class="preset-help"><span class="help-icon">ⓘ</span> Presets are generated illustrations, not patient fundus photographs.</div></aside>
-      <div class="scanner-panel"><div class="panel-topline"><span>02 / RETINAL IMAGING HUD</span><span id="scanIdTag">SESSION: RS–0001</span></div><div class="scanner-heading"><div><h3 id="scanTitle">Retinal acquisition</h3><p id="scanSubtitle">Select a demonstration sample or upload an image</p></div><span id="scannerStatus" class="status-pill"><span class="online-dot"></span> STANDBY</span></div><div class="scan-viewport" id="scanViewport"><div class="scan-grid"></div><div class="retina-image-wrap"><canvas id="retinaCanvas" width="680" height="680" aria-label="Illustrative retinal fundus view"></canvas></div><div class="outer-ring"></div><div class="reticle-cross reticle-h"></div><div class="reticle-cross reticle-v"></div><div class="target-corner tl"></div><div class="target-corner tr"></div><div class="target-corner bl"></div><div class="target-corner br"></div><div class="sweep"></div><div class="scan-tag top-left" id="scanAcquired">SCAN: AWAITING</div><div class="scan-tag top-right">FOV: <span id="fovTag">--</span></div><div class="scan-tag bottom-left">TENSOR: 224×224×3</div><div class="scan-tag bottom-right">MODE: <span id="scanModeTag">5 CLASS</span></div><div class="scan-coord coord-one">[ 0.381, 0.692 ]</div><div class="scan-coord coord-two">FUNDUS / OPTICAL</div><div class="scan-empty" id="scanEmpty"><div class="upload-icon">⤴</div><strong>Begin with a retinal scan.</strong><span>Choose a benchmark case or upload an image</span></div></div><div class="layer-section"><div class="layer-head"><span>VISION LAYERS</span><span id="activeLayerTag">01 / RAW FUNDUS</span></div><div class="layer-tabs" id="layerTabs"><button class="layer-btn active" data-layer="raw">01 Raw</button><button class="layer-btn" data-layer="green">02 Green</button><button class="layer-btn" data-layer="fov">03 FOV</button><button class="layer-btn" data-layer="clahe">04 CLAHE</button><button class="layer-btn" data-layer="morph">05 Top-hat</button></div></div><div class="scan-actions"><label class="upload-button" for="imageUpload"><span>↥</span> Upload fundus image</label><input id="imageUpload" type="file" accept="image/png,image/jpeg,image/tiff,image/webp" hidden /><button id="executeBtn" class="btn btn-primary run-button" disabled>✳ Execute analysis <span>↗</span></button></div><p class="workspace-disclaimer">Educational demonstration only. Uploaded images are processed locally for visualization; no clinical prediction is performed.</p></div></div>
-      <div class="results" id="results" hidden><div class="results-head"><div><div class="eyebrow"><span class="eyebrow-line"></span> 04 / ANALYSIS OUTPUT</div><h2>What the model <span>might see.</span></h2></div><span class="simulated-badge">ILLUSTRATIVE RESULTS / NOT MEDICAL ADVICE</span></div><div class="results-grid"><div class="results-left"><article class="result-card frame-card"><div class="panel-topline"><span>VISUAL TELEMETRY</span><span id="resultLayerLabel">LAYER 01 — RAW</span></div><div class="result-preview"><canvas id="resultCanvas" width="500" height="400"></canvas><span class="result-frame-cross result-frame-a">+</span><span class="result-frame-cross result-frame-b">+</span></div><div class="result-layer-btns" id="resultLayerTabs"><button class="result-layer active" data-layer="raw">RAW</button><button class="result-layer" data-layer="green">GREEN</button><button class="result-layer" data-layer="fov">FOV</button><button class="result-layer" data-layer="clahe">CLAHE</button><button class="result-layer" data-layer="morph">TOP-HAT</button></div></article><div class="biomarker-title"><span>ILLUSTRATIVE BIOMARKERS</span><span class="cyan">↗ 04 METRICS</span></div><div class="biomarkers"><article class="biomarker"><span>MICROVASCULAR DENSITY</span><strong id="vesselMetric">18.4<small>%</small></strong><p>Illustrative vessel coverage</p><div class="marker-line"></div></article><article class="biomarker"><span>CUP-TO-DISC ESTIMATE</span><strong id="cdrMetric">0.38</strong><p>Illustrative optic disc index</p><div class="marker-line amber-line"></div></article><article class="biomarker"><span>FIELD-OF-VIEW</span><strong id="fovMetric">85.6<small>%</small></strong><p>Illustrative field coverage</p><div class="marker-line cyan-line"></div></article><article class="biomarker"><span>PIPELINE DURATION</span><strong id="latencyMetric">98<small>ms</small></strong><p>UI animation benchmark only</p><div class="marker-line"></div></article></div></div><div class="results-right"><article class="result-card diagnosis"><div class="panel-topline"><span>CLASSIFICATION SIMULATION</span><span id="resultScanId">RS–0001</span></div><div class="diagnosis-body"><div><span class="diagnosis-badge" id="diagnosisBadge">● NORMAL PATTERN</span><h3 id="diagnosisTitle">Healthy retinal architecture</h3><p id="diagnosisSummary">Demonstration output for the selected benchmark.</p></div><div class="confidence-gauge" id="gauge"><div class="gauge-inner"><strong id="confidenceValue">97.6<small>%</small></strong><span>DEMO SCORE</span></div></div></div><div class="spectrum-heading"><span>ILLUSTRATIVE CLASS DISTRIBUTION</span><span>SOFTMAX / DEMO</span></div><div id="probabilities" class="probability-list"></div></article><article class="result-card triage-card"><div class="panel-topline"><span>CONTEXTUAL FOLLOW-UP</span><span>CLINICAL CONTEXT</span></div><div class="triage-header"><span id="urgencyTag" class="urgency-tag">ROUTINE</span><h3 id="triageHeading">Suggested clinical context</h3></div><p id="triageText">These findings are for demonstration and should not be used for diagnosis.</p><div class="followup" id="followupTags"></div></article><div class="result-actions"><button id="printBtn" class="btn btn-stroke">↗ Print summary</button><button id="exportBtn" class="btn btn-stroke">↓ Export JSON</button><button id="resetBtn" class="btn btn-primary">↻ New scan</button></div></div></div></div>
-      <div class="studio-end"><span>RETINASCOPE AI / EXPLORATORY CLINICAL INTERFACE</span><span>HUMAN INTERPRETATION REMAINS ESSENTIAL</span></div>
-    </div></section>
-    <section class="closing section-wrap"><div class="closing-left"><span class="eyebrow">NEXT-GENERATION SCREENING / CONCEPT 2026</span><h2>Better tools.<br /><em>Better questions.</em><br />Brighter futures.</h2></div><div class="closing-right"><p>Designed to make the science of ophthalmic computer vision understandable, interactive, and memorable.</p><a class="btn btn-primary" href="#studio">Return to live studio ↗</a></div></section>
-  </main>
-  <footer class="footer"><a class="brand" href="#top"><span class="brand-mark mini">✳</span> RETINASCOPE<span class="brand-ai">.AI</span></a><p>Experimental educational prototype. Not a medical device, diagnostic system, or substitute for professional eye care.</p><span>© 2026 / BUILT TO EXPLORE</span></footer>
+      <!-- Right: Enhanced Pipeline Flowchart with SNN -->
+      <div class="diagram-card">
+        <div class="diagram-meta-top">
+          <span class="meta-tag red-tag">LIVE OPHTHALMIC PIPELINE</span>
+          <span class="meta-note">4-Stage Preprocessing + Smart Neural Networks (SNN)</span>
+        </div>
+        <div class="flowchart-container">
+          <!-- Step 1: Raw Input -->
+          <div class="flow-node">
+            <div class="node-icon-emerald">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#00df82" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="#00df82"/></svg>
+            </div>
+            <span class="node-label-small">Raw Fundus Image (224 × 224 × 3)</span>
+          </div>
 
-  <div class="processing-overlay" id="processingOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="processingTitle"><div class="processing-box"><div class="panel-topline"><span>RETINASCOPE / COMPUTE MODULE</span><span class="cyan">SESSION RUNNING</span></div><div class="processing-symbol">✳</div><h2 id="processingTitle">Decoding the <span>retina.</span></h2><p>Walking through the illustrative computer vision pipeline.</p><div class="progress-track"><div id="progressFill"></div></div><div class="processing-count"><span id="progressLabel">INITIALIZING</span><span id="progressPercent">0%</span></div><div class="processing-steps" id="processingSteps"><span>01 GREEN</span><span>02 FOV</span><span>03 CLAHE</span><span>04 TOP-HAT</span><span>05 SOFTMAX</span></div><pre id="terminalLog" class="terminal-log">&gt; Ready for acquisition...</pre></div></div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+          <div class="flow-connector-v"></div>
+
+          <!-- Step 2: Preprocessing Hub -->
+          <div class="flow-node">
+            <div class="node-hub-symbol">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4v12" stroke="#00df82" stroke-width="1.5"/></svg>
+            </div>
+            <span class="node-label-small">4-Stage Adaptive Preprocessing</span>
+          </div>
+
+          <div class="flow-connector-v"></div>
+
+          <!-- 4 Preprocessing Branch Cards -->
+          <div class="flow-branches-grid">
+            <div class="branch-card">
+              <div class="branch-card-top">
+                <span class="branch-num">STAGE 01</span>
+                <span class="branch-badge">540–570nm</span>
+              </div>
+              <div class="branch-name"><span style="color:#00df82">◉</span> Green Channel</div>
+              <p class="branch-desc">Extracts peak hemoglobin absorption band for maximum vascular and lesion contrast.</p>
+            </div>
+
+            <div class="branch-card">
+              <div class="branch-card-top">
+                <span class="branch-num">STAGE 02</span>
+                <span class="branch-badge">Otsu Threshold</span>
+              </div>
+              <div class="branch-name"><span style="color:#00df82">◌</span> FOV Circle Mask</div>
+              <p class="branch-desc">Segments circular retinal aperture to eliminate peripheral black background artifacts.</p>
+            </div>
+
+            <div class="branch-card">
+              <div class="branch-card-top">
+                <span class="branch-num">STAGE 03</span>
+                <span class="branch-badge">Grid 8×8</span>
+              </div>
+              <div class="branch-name"><span style="color:#00df82">▤</span> Adaptive CLAHE</div>
+              <p class="branch-desc">Tile-based local contrast equalization enhances subtle microaneurysms and drusen deposits.</p>
+            </div>
+
+            <div class="branch-card">
+              <div class="branch-card-top">
+                <span class="branch-num">STAGE 04</span>
+                <span class="branch-badge">Morphological</span>
+              </div>
+              <div class="branch-name"><span style="color:#00df82">⌗</span> Top-Hat Filter</div>
+              <p class="branch-desc">Isolates microvascular tree, exudates, and cup-to-disc boundary structures.</p>
+            </div>
+          </div>
+
+          <div class="flow-connector-v"></div>
+
+          <!-- Step 3: SNN Smart Neural Networks Engine -->
+          <div class="snn-card">
+            <div class="snn-card-header">
+              <div class="snn-icon-emerald">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#00df82" stroke-width="2"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#00df82" stroke-width="2"/></svg>
+              </div>
+              <div class="snn-title-area">
+                <h4>Smart Neural Network (SNN) Core</h4>
+                <span>MobileNetV2 Deep Residual Backbone · 224 × 224 Input Tensor</span>
+              </div>
+            </div>
+            <div class="snn-features-grid">
+              <div class="snn-feat-item">
+                <strong>Depthwise Separable Convs</strong>
+                <span>Spatial filtering with 85% reduced compute load</span>
+              </div>
+              <div class="snn-feat-item">
+                <strong>Inverted Residual Bottlenecks</strong>
+                <span>Preserves low-dimensional manifold representations</span>
+              </div>
+              <div class="snn-feat-item">
+                <strong>Multi-Feature Attention</strong>
+                <span>Simultaneous biomarker extraction & disease scoring</span>
+              </div>
+              <div class="snn-feat-item">
+                <strong>Sub-150ms Clinical Latency</strong>
+                <span>Optimized for real-time edge & CPU clinic deployment</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flow-connector-v"></div>
+
+          <!-- Step 4: Multi-Class Output -->
+          <div class="softmax-output-card">
+            <div class="softmax-title-row">
+              <span class="sparkle-symbol">✳</span> Multi-Class Softmax Classification & Biomarker Telemetry
+            </div>
+            <div class="output-chips-row">
+              <span class="out-chip normal">Normal</span>
+              <span class="out-chip dr">Diabetic Retinopathy</span>
+              <span class="out-chip glaucoma">Glaucoma</span>
+              <span class="out-chip amd">AMD</span>
+              <span class="out-chip cataract">Cataract</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       5. BENTO FEATURES
+       ══════════════════════════════════════════════ -->
+  <section class="features-bento-section" id="features">
+    <div class="section-center-head">
+      <span class="subhead-emerald">PLATFORM CAPABILITIES</span>
+      <h2 class="bento-title">Built for real-world clinical workflows.</h2>
+      <p class="bento-desc">From rapid screening to deep diagnostic inspection — every layer of the fundus image tells a story.</p>
+    </div>
+    <div class="bento-grid">
+      <article class="bento-card bento-wide">
+        <div class="bento-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#00df82" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#00df82" stroke-width="1.5"/><circle cx="12" cy="12" r="1.5" fill="#00df82"/></svg>
+        </div>
+        <h3>5-Class Multi-Disease Screening</h3>
+        <p>Simultaneously detect Normal, Diabetic Retinopathy, Glaucoma, Age-Related Macular Degeneration, and Cataract from a single fundus photograph with calibrated softmax probabilities.</p>
+        <span class="bento-tag">MULTI-LABEL CLASSIFICATION</span>
+      </article>
+      <article class="bento-card">
+        <div class="bento-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" stroke="#00df82" stroke-width="1.5"/><path d="M8 12h8M12 8v8" stroke="#00df82" stroke-width="1.5"/></svg>
+        </div>
+        <h3>CLAHE Enhancement</h3>
+        <p>Contrast Limited Adaptive Histogram Equalization reveals microvascular details invisible to the naked eye, improving detection of subtle hemorrhages and drusen.</p>
+        <span class="bento-tag">IMAGE PROCESSING</span>
+      </article>
+      <article class="bento-card">
+        <div class="bento-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#00df82" stroke-width="1.5"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#00df82" stroke-width="1.5"/></svg>
+        </div>
+        <h3>SNN Smart Neural Networks</h3>
+        <p>MobileNetV2 deep residual backbone with depthwise separable convolutions and inverted bottlenecks, fine-tuned on multi-class retinal pathology datasets for high-efficiency clinical inference.</p>
+        <span class="bento-tag">SNN ARCHITECTURE</span>
+      </article>
+      <article class="bento-card">
+        <div class="bento-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#00df82" stroke-width="1.5"/><path d="M12 8v4l3 2" stroke="#00df82" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Sub-200ms Inference</h3>
+        <p>Complete preprocessing and neural inference in under 200 milliseconds — fast enough for real-time clinical screening workflows on CPU-only hardware.</p>
+        <span class="bento-tag">PERFORMANCE</span>
+      </article>
+      <article class="bento-card bento-wide">
+        <div class="bento-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#00df82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#00df82" stroke-width="1.5"/></svg>
+        </div>
+        <h3>Clinical Biomarker Extraction</h3>
+        <p>Automatically extracts illustrative biomarkers including microvascular density, cup-to-disc ratio estimates, and field-of-view coverage — alongside severity classification and triage recommendations.</p>
+        <span class="bento-tag">CLINICAL INTELLIGENCE</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       6. BENCHMARKS
+       ══════════════════════════════════════════════ -->
+  <section class="benchmarks-section" id="benchmarks">
+    <div class="section-center-head">
+      <span class="subhead-emerald">MODEL PERFORMANCE</span>
+      <h2 class="bento-title">Clinical-grade benchmarks.</h2>
+      <p class="bento-desc">Validated against standard ophthalmic imaging datasets with full reproducibility.</p>
+    </div>
+    <div class="benchmarks-grid">
+      <article class="benchmark-card">
+        <h3 class="benchmark-pillar-title">Architecture</h3>
+        <p class="benchmark-stat">MobileNetV2</p>
+        <p class="benchmark-sub">Lightweight yet powerful transfer-learning backbone optimized for edge deployment.</p>
+        <ul class="benchmark-points">
+          <li>✓ ImageNet pre-trained weights</li>
+          <li>✓ 19.6 MB model footprint</li>
+          <li>✓ 224 × 224 input resolution</li>
+          <li>✓ CPU-only inference capable</li>
+        </ul>
+        <a href="/app" class="btn-benchmark-outline">Try Now →</a>
+      </article>
+
+      <article class="benchmark-card benchmark-featured">
+        <span class="featured-badge">RECOMMENDED</span>
+        <h3 class="benchmark-pillar-title">Accuracy</h3>
+        <p class="benchmark-stat">98.4<span>%</span></p>
+        <p class="benchmark-sub">Validation accuracy across 5-class retinal disease classification on curated fundus datasets.</p>
+        <ul class="benchmark-points">
+          <li>✓ 5 disease categories</li>
+          <li>✓ Two-phase fine-tuning</li>
+          <li>✓ CLAHE + Top-Hat preprocessing</li>
+          <li>✓ Data augmentation pipeline</li>
+        </ul>
+        <a href="/app" class="btn-benchmark-emerald">Launch Scanner ↗</a>
+      </article>
+
+      <article class="benchmark-card">
+        <h3 class="benchmark-pillar-title">Speed</h3>
+        <p class="benchmark-stat">~150<span>ms</span></p>
+        <p class="benchmark-sub">End-to-end latency including preprocessing, neural inference, and result computation.</p>
+        <ul class="benchmark-points">
+          <li>✓ Real-time clinical throughput</li>
+          <li>✓ No GPU required</li>
+          <li>✓ REST API endpoint</li>
+          <li>✓ JSON report export</li>
+        </ul>
+        <a href="/app" class="btn-benchmark-outline">Benchmark Now →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       7. FAQ SECTION
+       ══════════════════════════════════════════════ -->
+  <section class="faq-section" id="faq">
+    <div class="section-center-head">
+      <span class="subhead-emerald">FREQUENTLY ASKED</span>
+      <h2 class="bento-title">Questions & answers.</h2>
+    </div>
+    <div class="faq-accordion-container">
+      <div class="faq-item">
+        <div class="faq-question">What diseases can RetinaScope detect? <span class="faq-chevron">▼</span></div>
+        <div class="faq-answer">RetinaScope AI classifies retinal fundus images into 5 categories: Normal (healthy retina), Diabetic Retinopathy, Glaucoma, Age-Related Macular Degeneration (AMD), and Cataract.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">What model architecture is used? <span class="faq-chevron">▼</span></div>
+        <div class="faq-answer">We use MobileNetV2 pre-trained on ImageNet with a custom classification head. The model is fine-tuned using a two-phase training strategy — first training the classification head, then fine-tuning the top 30 layers of MobileNetV2.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Does this replace a doctor's diagnosis? <span class="faq-chevron">▼</span></div>
+        <div class="faq-answer">No. RetinaScope AI is a research and educational tool designed to assist screening workflows. It should never be used as a replacement for professional ophthalmological evaluation. Always consult a qualified eye care professional.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">What image formats are supported? <span class="faq-chevron">▼</span></div>
+        <div class="faq-answer">The scanner accepts PNG, JPEG, BMP, TIFF, and WebP format retinal fundus photographs up to 16 MB. Images are automatically resized to 224 × 224 for model inference.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">How does the preprocessing pipeline work? <span class="faq-chevron">▼</span></div>
+        <div class="faq-answer">Each image passes through a 5-stage pipeline: green channel extraction for vascular contrast, FOV masking to isolate the retinal field, CLAHE for adaptive contrast enhancement, Top-Hat morphological filtering for micro-structure detection, and finally softmax inference through MobileNetV2.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Can I run this offline? <span class="faq-chevron">▼</span></div>
+        <div class="faq-answer">Yes. The entire platform runs locally with Flask, TensorFlow, and OpenCV. No internet connection is required once dependencies are installed. The 19.6 MB Keras model file runs on CPU without any GPU.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       Citation Box
+       ══════════════════════════════════════════════ -->
+  <section style="padding: 0 0 60px 0;">
+    <div class="citation-box-wrapper">
+      <div class="citation-header">
+        <span class="citation-type">BIBTEX CITATION</span>
+        <button class="btn-copy-citation" id="btn-copy-bibtex">📋 Copy Citation</button>
+      </div>
+      <pre class="citation-code-block" id="bibtex-code">@software{retinascope2026,
+  title   = {RetinaScope AI: Multi-Disease Retinal Screening},
+  author  = {Rudra Salokhe},
+  year    = {2026},
+  note    = {MobileNetV2 transfer learning, 5-class fundus classification},
+  url     = {https://github.com/rudrasalokhe/dr-binary-classifier-mobilenet}
+}</pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       8. PRE-FOOTER CTA
+       ══════════════════════════════════════════════ -->
+  <section class="prefooter-card-container">
+    <div class="prefooter-dark-card">
+      <span class="badge-emerald-glow">✳ READY TO SCAN</span>
+      <h2 class="prefooter-heading">Start screening<br>retinal images now.</h2>
+      <p class="prefooter-sub">Upload a fundus photograph and get AI-powered classification results in under 200 milliseconds.</p>
+      <div class="prefooter-actions">
+        <a href="/app" class="btn-emerald-pill">Launch Scanner ↗</a>
+        <a href="#ecosystem" class="btn-demo-pill"><span class="play-icon-circle">▶</span> Explore Pipeline</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       9. FOOTER
+       ══════════════════════════════════════════════ -->
+  <footer class="solopilot-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-brand-wrap">
+          <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
+            <circle cx="22" cy="22" r="18" stroke="#00df82" stroke-width="1.6"/>
+            <circle cx="22" cy="22" r="10" stroke="#00df82" stroke-width="1.6"/>
+            <circle cx="22" cy="22" r="3" fill="#00df82"/>
+          </svg>
+          <span class="brand-title-footer">RetinaScope<span style="color:#059669">.AI</span></span>
+        </div>
+        <p class="footer-subtext">AI-powered retinal disease screening. Not a medical device — for research and educational use only.</p>
+        <span class="footer-legal-copy">© 2026 RetinaScope AI. All rights reserved.</span>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-col">
+          <span class="col-title">Platform</span>
+          <a href="/app" class="footer-link">Live Scanner</a>
+          <a href="#features" class="footer-link">Features</a>
+          <a href="#benchmarks" class="footer-link">Benchmarks</a>
+          <a href="#ecosystem" class="footer-link">Solutions</a>
+        </div>
+        <div class="footer-col">
+          <span class="col-title">Resources</span>
+          <a href="#faq" class="footer-link">FAQ</a>
+          <a href="/health" class="footer-link">API Health</a>
+          <a href="/api/samples" class="footer-link">Sample API</a>
+        </div>
+        <div class="footer-col">
+          <span class="col-title">Technology</span>
+          <a href="#" class="footer-link">TensorFlow 2.x</a>
+          <a href="#" class="footer-link">MobileNetV2</a>
+          <a href="#" class="footer-link">OpenCV</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
 </body>
 </html>

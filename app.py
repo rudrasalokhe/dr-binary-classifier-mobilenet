@@ -336,9 +336,11 @@ def internal_error(error):
 def index():
     return render_template("landing.html")
 
+@app.route("/scanner")
 @app.route("/app")
-def app_page():
-    return render_template("index.html")
+@app.route("/model")
+def scanner_page():
+    return render_template("scanner.html")
 
 @app.route("/test_images/<path:filename>")
 def serve_test_image(filename):

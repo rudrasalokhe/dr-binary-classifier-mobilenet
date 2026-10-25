@@ -865,6 +865,211 @@ body.solopilot-theme {
   gap: 8px;
 }
 
+/* Enhanced 4-Stage Preprocessing Grid */
+.flow-branches-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin: 12px 0;
+}
+
+@media (max-width: 640px) {
+  .flow-branches-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.branch-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  text-align: left;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.branch-card:hover {
+  transform: translateY(-2px);
+  border-color: #00df82;
+  box-shadow: 0 8px 20px rgba(0, 223, 130, 0.1);
+}
+
+.branch-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.branch-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #059669;
+  background: rgba(0, 223, 130, 0.1);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.branch-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.branch-desc {
+  font-size: 0.74rem;
+  color: var(--text-dark-muted);
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+.branch-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #4b5563;
+  background: #f3f4f6;
+  padding: 2px 7px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* SNN Smart Neural Networks Card */
+.snn-card {
+  width: 100%;
+  background: linear-gradient(135deg, #0c1117 0%, #151e28 100%);
+  border: 1.5px solid rgba(0, 223, 130, 0.35);
+  border-radius: 18px;
+  padding: 18px 20px;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 223, 130, 0.08);
+  text-align: left;
+  margin: 6px 0;
+  position: relative;
+}
+
+.snn-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.snn-icon-emerald {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 223, 130, 0.12);
+  border: 1px solid rgba(0, 223, 130, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00df82;
+  flex-shrink: 0;
+}
+
+.snn-title-area h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+
+.snn-title-area span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #00df82;
+  display: block;
+}
+
+.snn-features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .snn-features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.snn-feat-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 11px;
+  border-radius: 8px;
+}
+
+.snn-feat-item strong {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin-bottom: 2px;
+}
+
+.snn-feat-item span {
+  font-size: 0.68rem;
+  color: #9ca3af;
+  line-height: 1.35;
+  display: block;
+}
+
+/* Output Card */
+.softmax-output-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.softmax-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.output-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.out-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.out-chip.normal { background: rgba(0, 223, 130, 0.1); color: #059669; border: 1px solid rgba(0, 223, 130, 0.25); }
+.out-chip.dr { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.25); }
+.out-chip.glaucoma { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25); }
+.out-chip.amd { background: rgba(14, 165, 233, 0.1); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.25); }
+.out-chip.cataract { background: rgba(168, 85, 247, 0.1); color: #9333ea; border: 1px solid rgba(168, 85, 247, 0.25); }
+
 .node-pill-dark {
   display: inline-flex;
   align-items: center;

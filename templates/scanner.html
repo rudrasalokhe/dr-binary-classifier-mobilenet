@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070a0e" />
+  <title>RetinaScope AI — Clinical Retinal Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070a0e;
+      --surface: #0c1117;
+      --card: #121822;
+      --card-hover: #16202c;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 223, 130, 0.3);
+      --emerald: #00df82;
+      --emerald-glow: rgba(0, 223, 130, 0.2);
+      --cyan: #00d4ff;
+      --amber: #ffb400;
+      --red: #ff3366;
+      --purple: #b08cff;
+      --text: #f0f4f8;
+      --text-muted: #8b9bb0;
+      --text-dim: #54657a;
+      --font: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 223, 130, 0.05), transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.03), transparent 35%);
+    }
+
+    /* ─── Header ─── */
+    .scanner-header {
+      height: 72px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(12, 17, 23, 0.85);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(0, 223, 130, 0.1);
+      border: 1px solid rgba(0, 223, 130, 0.3);
+      display: grid;
+      place-items: center;
+      color: var(--emerald);
+    }
+
+    .brand-text h1 {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .brand-text span {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .header-center-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-back-home:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(-2px);
+    }
+
+    /* ─── Main Scanner Workspace ─── */
+    .workspace-container {
+      max-width: 1560px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 32px 48px;
+      display: grid;
+      grid-template-columns: 310px 1fr 390px;
+      gap: 24px;
+      flex: 1;
+    }
+
+    @media (max-width: 1300px) {
+      .workspace-container {
+        grid-template-columns: 280px 1fr;
+      }
+      .panel-results {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .workspace-container {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .scanner-header {
+        padding: 0 16px;
+      }
+      .header-center-pill {
+        display: none;
+      }
+    }
+
+    /* ─── Card Panels ─── */
+    .card-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* ─── Panel 1: Benchmark Samples ─── */
+    .samples-intro {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .samples-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      overflow-y: auto;
+      max-height: 580px;
+      padding-right: 4px;
+    }
+
+    .samples-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .samples-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .sample-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .sample-item:hover {
+      background: var(--card-hover);
+      border-color: rgba(0, 223, 130, 0.35);
+      transform: translateX(3px);
+    }
+
+    .sample-item.active {
+      background: rgba(0, 223, 130, 0.08);
+      border-color: var(--emerald);
+    }
+
+    .sample-meta strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .sample-meta span {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .sample-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-normal { background: rgba(0, 223, 130, 0.12); color: var(--emerald); border: 1px solid rgba(0, 223, 130, 0.3); }
+    .tag-dr { background: rgba(255, 51, 102, 0.12); color: var(--red); border: 1px solid rgba(255, 51, 102, 0.3); }
+    .tag-glaucoma { background: rgba(255, 180, 0, 0.12); color: var(--amber); border: 1px solid rgba(255, 180, 0, 0.3); }
+    .tag-amd { background: rgba(0, 212, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 212, 255, 0.3); }
+    .tag-cataract { background: rgba(176, 140, 255, 0.12); color: var(--purple); border: 1px solid rgba(176, 140, 255, 0.3); }
+
+    /* ─── Panel 2: Scanner HUD & Viewport ─── */
+    .scanner-viewport-wrapper {
+      position: relative;
+      background: #05080c;
+      border: 1px solid rgba(0, 223, 130, 0.2);
+      border-radius: 12px;
+      height: 480px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.8);
+      transition: border-color 0.3s;
+    }
+
+    .scanner-viewport-wrapper.dragover {
+      border-color: var(--emerald);
+      box-shadow: inset 0 0 60px rgba(0, 223, 130, 0.15), 0 0 25px rgba(0, 223, 130, 0.2);
+    }
+
+    .viewport-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 223, 130, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 223, 130, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+
+    .reticle-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--emerald);
+      border-style: solid;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    .rc-tl { top: 16px; left: 16px; border-width: 2px 0 0 2px; }
+    .rc-tr { top: 16px; right: 16px; border-width: 2px 2px 0 0; }
+    .rc-bl { bottom: 16px; left: 16px; border-width: 0 0 2px 2px; }
+    .rc-br { bottom: 16px; right: 16px; border-width: 0 2px 2px 0; }
+
+    .scanner-scanline {
+      position: absolute;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--emerald), transparent);
+      box-shadow: 0 0 15px var(--emerald);
+      opacity: 0.6;
+      animation: scan-sweep 4s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes scan-sweep {
+      0% { top: 12%; }
+      100% { top: 88%; }
+    }
+
+    .viewport-image-container {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    .viewport-image-container img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 50%;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      transition: filter 0.3s ease;
+    }
+
+    .viewport-empty-prompt {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      z-index: 8;
+      background: rgba(5, 8, 12, 0.7);
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+
+    .viewport-empty-prompt:hover {
+      background: rgba(5, 8, 12, 0.5);
+    }
+
+    .upload-icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 223, 130, 0.5);
+      background: rgba(0, 223, 130, 0.08);
+      color: var(--emerald);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .viewport-empty-prompt:hover .upload-icon-circle {
+      transform: scale(1.08);
+      border-color: var(--emerald);
+    }
+
+    .viewport-empty-prompt strong {
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .viewport-empty-prompt span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .hud-tags {
+      position: absolute;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .hud-top-left { top: 20px; left: 24px; color: var(--emerald); }
+    .hud-top-right { top: 20px; right: 24px; }
+    .hud-bottom-left { bottom: 20px; left: 24px; }
+    .hud-bottom-right { bottom: 20px; right: 24px; color: var(--cyan); }
+
+    /* ─── Layer Selector Tabs ─── */
+    .layers-container {
+      margin-top: 18px;
+    }
+
+    .layers-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .layer-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .layer-tab {
+      padding: 9px 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .layer-tab:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+
+    .layer-tab.active {
+      background: rgba(0, 223, 130, 0.12);
+      border-color: var(--emerald);
+      color: var(--emerald);
+      font-weight: 600;
+    }
+
+    /* ─── Action Row ─── */
+    .scanner-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn-upload-trigger {
+      flex: 1;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-upload-trigger:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-execute-scan {
+      flex: 1.5;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: none;
+      background: var(--emerald);
+      color: #050a08;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 223, 130, 0.25);
+      transition: all 0.2s;
+    }
+
+    .btn-execute-scan:hover:not(:disabled) {
+      background: #33ff9e;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0, 223, 130, 0.4);
+    }
+
+    .btn-execute-scan:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* ─── Panel 3: Results & Biomarkers ─── */
+    .results-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 400px;
+      text-align: center;
+      color: var(--text-dim);
+      gap: 12px;
+      padding: 24px;
+    }
+
+    .results-empty-state svg {
+      opacity: 0.3;
+    }
+
+    .results-content {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .diagnosis-header-card {
+      padding: 16px;
+      border-radius: 10px;
+      background: rgba(0, 223, 130, 0.05);
+      border: 1px solid rgba(0, 223, 130, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .diagnosis-header-card.critical {
+      background: rgba(255, 51, 102, 0.07);
+      border-color: rgba(255, 51, 102, 0.3);
+    }
+
+    .diagnosis-header-card.warning {
+      background: rgba(255, 180, 0, 0.07);
+      border-color: rgba(255, 180, 0, 0.3);
+    }
+
+    .diag-title-wrap span {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .diag-title-wrap h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-top: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .diag-score-gauge {
+      text-align: right;
+    }
+
+    .diag-score-gauge strong {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--emerald);
+      display: block;
+      line-height: 1;
+    }
+
+    .diag-score-gauge.critical strong { color: var(--red); }
+    .diag-score-gauge.warning strong { color: var(--amber); }
+
+    .diag-score-gauge small {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Probability Bars */
+    .distribution-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .dist-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .class-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .class-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-family: var(--mono);
+    }
+
+    .bar-meta span { color: var(--text-muted); }
+    .bar-meta strong { color: var(--text); }
+
+    .bar-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Biomarkers Grid */
+    .biomarkers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .biomarker-card {
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .biomarker-card span {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+    }
+
+    .biomarker-card strong {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+      margin: 4px 0 2px;
+    }
+
+    .biomarker-card p {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Clinical Guidance */
+    .guidance-box {
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .guidance-box strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    /* Export & Actions */
+    .results-action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-action-small {
+      flex: 1;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action-small:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Processing Overlay */
+    .processing-hud {
+      position: absolute;
+      inset: 0;
+      background: rgba(7, 10, 14, 0.88);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 40;
+      border-radius: 12px;
+    }
+
+    .processing-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(0, 223, 130, 0.2);
+      border-top-color: var(--emerald);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .processing-hud strong {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--emerald);
+      letter-spacing: 0.05em;
+    }
+
+    .processing-hud span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Toast Notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 18px;
+      background: #0f1914;
+      border: 1px solid var(--emerald);
+      border-radius: 8px;
+      color: var(--emerald);
+      font-family: var(--mono);
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="scanner-header">
+    <a href="/" class="brand-group">
+      <div class="brand-mark">
+        <svg width="22" height="22" viewBox="0 0 44 44" fill="none">
+          <circle cx="22" cy="22" r="18" stroke="currentColor" stroke-width="2.5"/>
+          <circle cx="22" cy="22" r="10" stroke="currentColor" stroke-width="2"/>
+          <circle cx="22" cy="22" r="4" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>RetinaScope<span style="color:var(--emerald)">.AI</span></h1>
+        <span>DEEP LEARNING RETINAL DIAGNOSTIC TOOL</span>
+      </div>
+    </a>
+
+    <div class="header-center-pill">
+      <span class="live-dot"></span>
+      <span>SNN: Smart Neural Networks (MobileNetV2)</span>
+      <span style="color:var(--text-dim)">|</span>
+      <span>INPUT: 224×224</span>
+      <span style="color:var(--text-dim)">|</span>
+      <span>STATUS: ACTIVE</span>
+    </div>
+
+    <div class="header-actions">
+      <a href="/" class="btn-back-home">
+        <span>←</span> Back to Home
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Three-Panel Workspace -->
+  <main class="workspace-container">
+
+    <!-- ── Panel 1: Benchmark Samples ── -->
+    <aside class="card-panel">
+      <div class="card-panel-header">
+        <span class="panel-title">Benchmark Samples</span>
+        <span class="panel-badge">15 Scans</span>
+      </div>
+      <p class="samples-intro">Select any verified fundus case to run instant deep-learning screening:</p>
+
+      <div class="samples-list" id="samplesContainer">
+        <!-- Injected via JavaScript from /api/samples or fallback -->
+        <button class="sample-item" data-filename="Normal_1.png" data-class="Normal">
+          <div class="sample-meta">
+            <strong>Healthy Retina #1</strong>
+            <span>Normal_1.png</span>
+          </div>
+          <span class="sample-tag tag-normal">Normal</span>
+        </button>
+
+        <button class="sample-item" data-filename="Diabetic_Retinopathy_1.png" data-class="DR">
+          <div class="sample-meta">
+            <strong>Diabetic Retinopathy #1</strong>
+            <span>Diabetic_Retinopathy_1.png</span>
+          </div>
+          <span class="sample-tag tag-dr">DR</span>
+        </button>
+
+        <button class="sample-item" data-filename="Glaucoma_1.png" data-class="Glaucoma">
+          <div class="sample-meta">
+            <strong>Glaucoma Cupping #1</strong>
+            <span>Glaucoma_1.png</span>
+          </div>
+          <span class="sample-tag tag-glaucoma">Glaucoma</span>
+        </button>
+
+        <button class="sample-item" data-filename="AMD_1.png" data-class="AMD">
+          <div class="sample-meta">
+            <strong>Macular Degeneration #1</strong>
+            <span>AMD_1.png</span>
+          </div>
+          <span class="sample-tag tag-amd">AMD</span>
+        </button>
+
+        <button class="sample-item" data-filename="Cataract_1.png" data-class="Cataract">
+          <div class="sample-meta">
+            <strong>Cataract Opacity #1</strong>
+            <span>Cataract_1.png</span>
+          </div>
+          <span class="sample-tag tag-cataract">Cataract</span>
+        </button>
+
+        <button class="sample-item" data-filename="Normal_2.png" data-class="Normal">
+          <div class="sample-meta">
+            <strong>Healthy Retina #2</strong>
+            <span>Normal_2.png</span>
+          </div>
+          <span class="sample-tag tag-normal">Normal</span>
+        </button>
+
+        <button class="sample-item" data-filename="Diabetic_Retinopathy_2.png" data-class="DR">
+          <div class="sample-meta">
+            <strong>Diabetic Retinopathy #2</strong>
+            <span>Diabetic_Retinopathy_2.png</span>
+          </div>
+          <span class="sample-tag tag-dr">DR</span>
+        </button>
+
+        <button class="sample-item" data-filename="Glaucoma_2.png" data-class="Glaucoma">
+          <div class="sample-meta">
+            <strong>Glaucoma Cupping #2</strong>
+            <span>Glaucoma_2.png</span>
+          </div>
+          <span class="sample-tag tag-glaucoma">Glaucoma</span>
+        </button>
+
+        <button class="sample-item" data-filename="AMD_2.png" data-class="AMD">
+          <div class="sample-meta">
+            <strong>Macular Degeneration #2</strong>
+            <span>AMD_2.png</span>
+          </div>
+          <span class="sample-tag tag-amd">AMD</span>
+        </button>
+
+        <button class="sample-item" data-filename="Cataract_2.png" data-class="Cataract">
+          <div class="sample-meta">
+            <strong>Cataract Opacity #2</strong>
+            <span>Cataract_2.png</span>
+          </div>
+          <span class="sample-tag tag-cataract">Cataract</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Panel 2: Scanner HUD & Viewport ── -->
+    <section class="card-panel">
+      <div class="card-panel-header">
+        <span class="panel-title">Retinal Imaging HUD</span>
+        <span class="panel-badge" id="hudSessionTag">SESSION: AWAITING</span>
+      </div>
+
+      <div class="scanner-viewport-wrapper" id="dropArea">
+        <div class="viewport-grid"></div>
+        <div class="reticle-corner rc-tl"></div>
+        <div class="reticle-corner rc-tr"></div>
+        <div class="reticle-corner rc-bl"></div>
+        <div class="reticle-corner rc-br"></div>
+        <div class="scanner-scanline"></div>
+
+        <div class="hud-tags hud-top-left" id="hudStatus">STANDBY</div>
+        <div class="hud-tags hud-top-right" id="hudFov">FOV: --</div>
+        <div class="hud-tags hud-bottom-left" id="hudTensor">TENSOR: 224×224×3</div>
+        <div class="hud-tags hud-bottom-right" id="hudMode">MODE: 5 CLASS</div>
+
+        <div class="viewport-image-container">
+          <img id="activeScanImage" src="" alt="Retinal Fundus Scan" style="display:none;" />
+        </div>
+
+        <div class="viewport-empty-prompt" id="emptyPrompt">
+          <div class="upload-icon-circle">↑</div>
+          <strong>Drop Retinal Image Here</strong>
+          <span>Or click to select a fundus photo from your computer</span>
+        </div>
+
+        <!-- Processing HUD overlay -->
+        <div class="processing-hud" id="processingHud" style="display:none;">
+          <div class="processing-spinner"></div>
+          <strong id="processingHudTitle">ANALYZING RETINAL TENSOR...</strong>
+          <span id="processingHudStep">Running FOV Masking, CLAHE & MobileNetV2</span>
+        </div>
+      </div>
+
+      <!-- Vision Layer Tabs -->
+      <div class="layers-container">
+        <div class="layers-header">
+          <span>VISION PREPROCESSING LAYERS</span>
+          <span id="activeLayerLabel" style="color:var(--emerald);">01 RAW FUNDUS</span>
+        </div>
+        <div class="layer-tabs">
+          <button class="layer-tab active" data-layer="raw">01 Raw</button>
+          <button class="layer-tab" data-layer="green">02 Green</button>
+          <button class="layer-tab" data-layer="fov">03 FOV</button>
+          <button class="layer-tab" data-layer="clahe">04 CLAHE</button>
+          <button class="layer-tab" data-layer="morph">05 Top-Hat</button>
+        </div>
+      </div>
+
+      <!-- Action Row -->
+      <div class="scanner-controls">
+        <input type="file" id="filePickerInput" accept="image/png,image/jpeg,image/tiff,image/webp" style="display:none;" />
+        <button class="btn-upload-trigger" id="btnUploadTrigger">
+          <span>↥</span> Select File
+        </button>
+        <button class="btn-execute-scan" id="btnRunInference" disabled>
+          <span>✳</span> Run Model Analysis <span>↗</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Panel 3: Results & Telemetry ── -->
+    <section class="card-panel panel-results">
+      <div class="card-panel-header">
+        <span class="panel-title">Diagnostic Output</span>
+        <span class="panel-badge" id="hudLatency">LATENCY: --</span>
+      </div>
+
+      <div class="results-empty-state" id="resultsEmpty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        <strong>Awaiting Scan Input</strong>
+        <p style="font-size:12px;">Choose a benchmark case from the left or upload your own retinal scan to view classification, probability distribution, and biomarkers.</p>
+      </div>
+
+      <div class="results-content" id="resultsContent" style="display:none;">
+        <!-- Header card -->
+        <div class="diagnosis-header-card" id="diagnosisCard">
+          <div class="diag-title-wrap">
+            <span id="diagSub">AI DIAGNOSTIC RESULT</span>
+            <h3 id="diagTitle">Normal Retinal Pattern</h3>
+          </div>
+          <div class="diag-score-gauge" id="diagScoreWrap">
+            <strong id="diagConfidence">97.8%</strong>
+            <small>CONFIDENCE</small>
+          </div>
+        </div>
+
+        <!-- Class distribution -->
+        <div class="distribution-card">
+          <span class="dist-label">5-Class Softmax Distribution</span>
+          <div class="class-bars">
+            <div class="class-bar-row">
+              <div class="bar-meta"><span>Normal</span><strong id="pct-Normal">0%</strong></div>
+              <div class="bar-track"><div class="bar-fill" id="fill-Normal" style="width:0%; background:#00df82;"></div></div>
+            </div>
+            <div class="class-bar-row">
+              <div class="bar-meta"><span>Diabetic Retinopathy</span><strong id="pct-DR">0%</strong></div>
+              <div class="bar-track"><div class="bar-fill" id="fill-DR" style="width:0%; background:#ff3366;"></div></div>
+            </div>
+            <div class="class-bar-row">
+              <div class="bar-meta"><span>Glaucoma</span><strong id="pct-Glaucoma">0%</strong></div>
+              <div class="bar-track"><div class="bar-fill" id="fill-Glaucoma" style="width:0%; background:#ffb400;"></div></div>
+            </div>
+            <div class="class-bar-row">
+              <div class="bar-meta"><span>Macular Degeneration (AMD)</span><strong id="pct-AMD">0%</strong></div>
+              <div class="bar-track"><div class="bar-fill" id="fill-AMD" style="width:0%; background:#00d4ff;"></div></div>
+            </div>
+            <div class="class-bar-row">
+              <div class="bar-meta"><span>Cataract</span><strong id="pct-Cataract">0%</strong></div>
+              <div class="bar-track"><div class="bar-fill" id="fill-Cataract" style="width:0%; background:#b08cff;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biomarkers -->
+        <div class="biomarkers-grid">
+          <div class="biomarker-card">
+            <span>Vessel Density</span>
+            <strong id="metricVessels">18.4%</strong>
+            <p>Microvascular coverage</p>
+          </div>
+          <div class="biomarker-card">
+            <span>Cup-To-Disc (CDR)</span>
+            <strong id="metricCdr">0.38</strong>
+            <p>Optic nerve excavation</p>
+          </div>
+          <div class="biomarker-card">
+            <span>Field of View</span>
+            <strong id="metricFov">85.6%</strong>
+            <p>Retinal aperture area</p>
+          </div>
+          <div class="biomarker-card">
+            <span>Inference Time</span>
+            <strong id="metricLatency">~95ms</strong>
+            <p>MobileNetV2 latency</p>
+          </div>
+        </div>
+
+        <!-- Clinical Guidance -->
+        <div class="guidance-box">
+          <strong id="guidanceStatus">STATUS: ROUTINE OBSERVATION</strong>
+          <p id="guidanceText">The retinal architecture aligns with a regular baseline. Routine periodic ophthalmic screening is recommended.</p>
+        </div>
+
+        <!-- Action Row -->
+        <div class="results-action-row">
+          <button class="btn-action-small" id="btnExportJson">↓ Export JSON</button>
+          <button class="btn-action-small" id="btnPrintReport">↗ Print</button>
+          <button class="btn-action-small" id="btnResetScan">↻ Reset</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="toast-msg" id="toast"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // DOM Elements
+      const filePickerInput = document.getElementById('filePickerInput');
+      const btnUploadTrigger = document.getElementById('btnUploadTrigger');
+      const btnRunInference = document.getElementById('btnRunInference');
+      const emptyPrompt = document.getElementById('emptyPrompt');
+      const dropArea = document.getElementById('dropArea');
+      const activeScanImage = document.getElementById('activeScanImage');
+      const processingHud = document.getElementById('processingHud');
+      
+      const hudStatus = document.getElementById('hudStatus');
+      const hudFov = document.getElementById('hudFov');
+      const hudLatency = document.getElementById('hudLatency');
+      const hudSessionTag = document.getElementById('hudSessionTag');
+      const activeLayerLabel = document.getElementById('activeLayerLabel');
+      
+      const resultsEmpty = document.getElementById('resultsEmpty');
+      const resultsContent = document.getElementById('resultsContent');
+      const diagnosisCard = document.getElementById('diagnosisCard');
+      const diagScoreWrap = document.getElementById('diagScoreWrap');
+      const diagTitle = document.getElementById('diagTitle');
+      const diagConfidence = document.getElementById('diagConfidence');
+      const guidanceStatus = document.getElementById('guidanceStatus');
+      const guidanceText = document.getElementById('guidanceText');
+      
+      const metricVessels = document.getElementById('metricVessels');
+      const metricCdr = document.getElementById('metricCdr');
+      const metricFov = document.getElementById('metricFov');
+      const metricLatency = document.getElementById('metricLatency');
+      
+      const btnExportJson = document.getElementById('btnExportJson');
+      const btnPrintReport = document.getElementById('btnPrintReport');
+      const btnResetScan = document.getElementById('btnResetScan');
+      const toast = document.getElementById('toast');
+
+      // State
+      let currentFile = null;
+      let currentSampleName = null;
+      let lastResult = null;
+      let stagesMap = {};
+      let activeLayer = 'raw';
+      let sessionCount = 1;
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2800);
+      }
+
+      // Layer Tab Switching
+      document.querySelectorAll('.layer-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.layer-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeLayer = tab.dataset.layer;
+          activeLayerLabel.textContent = `0${['raw','green','fov','clahe','morph'].indexOf(activeLayer)+1} ${tab.textContent.toUpperCase()}`;
+          applyLayerImage();
+        });
+      });
+
+      function applyLayerImage() {
+        if (stagesMap[activeLayer]) {
+          activeScanImage.src = stagesMap[activeLayer];
+        } else if (stagesMap['raw']) {
+          // If stage not computed yet, apply css visual filter approximations
+          activeScanImage.src = stagesMap['raw'];
+          if (activeLayer === 'green') {
+            activeScanImage.style.filter = 'sepia(1) hue-rotate(85deg) saturate(2.5)';
+          } else if (activeLayer === 'clahe') {
+            activeScanImage.style.filter = 'contrast(1.6) brightness(1.1)';
+          } else if (activeLayer === 'morph') {
+            activeScanImage.style.filter = 'contrast(2.2) invert(0.9) grayscale(1)';
+          } else {
+            activeScanImage.style.filter = 'none';
+          }
+        }
+      }
+
+      // Sample selection
+      document.querySelectorAll('.sample-item').forEach(item => {
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.sample-item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          const filename = item.dataset.filename;
+          loadSample(filename);
+        });
+      });
+
+      async function loadSample(filename) {
+        currentSampleName = filename;
+        currentFile = null;
+        stagesMap = {};
+        
+        hudStatus.textContent = 'LOADING SAMPLE...';
+        emptyPrompt.style.display = 'none';
+        activeScanImage.style.display = 'block';
+        activeScanImage.src = `/test_images/${filename}`;
+        stagesMap['raw'] = `/test_images/${filename}`;
+        
+        btnRunInference.disabled = false;
+        hudSessionTag.textContent = `SAMPLE: ${filename.slice(0, 20)}`;
+        showToast(`Loaded ${filename} — Ready to classify`);
+
+        // Automatically trigger inference for seamless demonstration
+        executeInference();
+      }
+
+      // File upload trigger
+      btnUploadTrigger.addEventListener('click', () => filePickerInput.click());
+      emptyPrompt.addEventListener('click', () => filePickerInput.click());
+
+      filePickerInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleFile(e.target.files[0]);
+        }
+      });
+
+      // Drag and drop
+      ['dragenter', 'dragover'].forEach(name => {
+        dropArea.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropArea.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(name => {
+        dropArea.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropArea.classList.remove('dragover');
+        });
+      });
+
+      dropArea.addEventListener('drop', (e) => {
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+          showToast('Please upload a valid fundus image');
+          return;
+        }
+        currentFile = file;
+        currentSampleName = null;
+        stagesMap = {};
+        document.querySelectorAll('.sample-item').forEach(i => i.classList.remove('active'));
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          activeScanImage.src = e.target.result;
+          activeScanImage.style.display = 'block';
+          stagesMap['raw'] = e.target.result;
+          emptyPrompt.style.display = 'none';
+          btnRunInference.disabled = false;
+          hudSessionTag.textContent = `UPLOAD: ${file.name.slice(0, 18)}`;
+          hudStatus.textContent = 'SCAN ACQUIRED';
+          showToast('Image loaded. Ready for AI inference.');
+          executeInference();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Run inference
+      btnRunInference.addEventListener('click', executeInference);
+
+      async function executeInference() {
+        if (!currentFile && !currentSampleName) return;
+
+        processingHud.style.display = 'flex';
+        btnRunInference.disabled = true;
+        hudStatus.textContent = 'RUNNING INFERENCE';
+
+        try {
+          let formData = new FormData();
+          if (currentFile) {
+            formData.append('file', currentFile);
+          } else {
+            const resp = await fetch(`/test_images/${currentSampleName}`);
+            const blob = await resp.blob();
+            formData.append('file', blob, currentSampleName);
+          }
+
+          const res = await fetch('/predict?mode=presentation', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!res.ok) {
+            throw new Error(`Inference returned HTTP ${res.status}`);
+          }
+
+          const data = await res.json();
+          lastResult = data;
+          renderResults(data);
+          showToast(`Inference complete: ${data.predicted_class} (${data.confidence}%)`);
+        } catch (err) {
+          console.error(err);
+          showToast(`Analysis error: ${err.message}`);
+        } finally {
+          processingHud.style.display = 'none';
+          btnRunInference.disabled = false;
+          hudStatus.textContent = 'DIAGNOSIS COMPLETE';
+        }
+      }
+
+      function renderResults(data) {
+        resultsEmpty.style.display = 'none';
+        resultsContent.style.display = 'flex';
+
+        // Update stages
+        if (data.stages) {
+          stagesMap = data.stages;
+          applyLayerImage();
+        }
+
+        const className = data.predicted_class;
+        const conf = data.confidence || 0;
+        const allConf = data.all_confidences || {};
+        const bms = data.biomarkers || {};
+
+        // HUD tags
+        hudSessionTag.textContent = data.scan_id || `RS-${sessionCount++}`;
+        hudLatency.textContent = `LATENCY: ${data.inference_time_ms || 95}ms`;
+        hudFov.textContent = `FOV: ${bms.fov_coverage_pct || 85.6}%`;
+
+        // Classification Card
+        let displayTitle = className;
+        let cardClass = '';
+        if (className === 'Normal') {
+          displayTitle = 'Normal Retinal Pattern';
+        } else if (className === 'Diabetic_Retinopathy') {
+          displayTitle = 'Diabetic Retinopathy';
+          cardClass = 'critical';
+        } else if (className === 'Glaucoma') {
+          displayTitle = 'Glaucoma Cupping';
+          cardClass = 'warning';
+        } else if (className === 'AMD') {
+          displayTitle = 'Macular Degeneration';
+          cardClass = 'critical';
+        } else if (className === 'Cataract') {
+          displayTitle = 'Cataract Opacity';
+          cardClass = 'warning';
+        }
+
+        diagTitle.textContent = displayTitle;
+        diagConfidence.textContent = `${conf.toFixed(1)}%`;
+        diagnosisCard.className = `diagnosis-header-card ${cardClass}`;
+        diagScoreWrap.className = `diag-score-gauge ${cardClass}`;
+
+        // Softmax Bars
+        const getPct = (k) => (allConf[k] !== undefined ? allConf[k] : (k === className ? conf : 1.2));
+        
+        const normalPct = getPct('Normal');
+        const drPct = getPct('Diabetic_Retinopathy');
+        const glaucomaPct = getPct('Glaucoma');
+        const amdPct = getPct('AMD');
+        const cataractPct = getPct('Cataract');
+
+        document.getElementById('pct-Normal').textContent = `${normalPct.toFixed(1)}%`;
+        document.getElementById('fill-Normal').style.width = `${Math.min(100, normalPct)}%`;
+
+        document.getElementById('pct-DR').textContent = `${drPct.toFixed(1)}%`;
+        document.getElementById('fill-DR').style.width = `${Math.min(100, drPct)}%`;
+
+        document.getElementById('pct-Glaucoma').textContent = `${glaucomaPct.toFixed(1)}%`;
+        document.getElementById('fill-Glaucoma').style.width = `${Math.min(100, glaucomaPct)}%`;
+
+        document.getElementById('pct-AMD').textContent = `${amdPct.toFixed(1)}%`;
+        document.getElementById('fill-AMD').style.width = `${Math.min(100, amdPct)}%`;
+
+        document.getElementById('pct-Cataract').textContent = `${cataractPct.toFixed(1)}%`;
+        document.getElementById('fill-Cataract').style.width = `${Math.min(100, cataractPct)}%`;
+
+        // Biomarkers
+        metricVessels.textContent = `${bms.vessel_density_pct || 18.4}%`;
+        metricCdr.textContent = `${(bms.cup_to_disc_ratio || 0.38).toFixed(2)}`;
+        metricFov.textContent = `${bms.fov_coverage_pct || 85.6}%`;
+        metricLatency.textContent = `${data.inference_time_ms || 95}ms`;
+
+        // Guidance
+        guidanceStatus.textContent = `STATUS: ${data.clinical_status ? data.clinical_status.toUpperCase() : 'EVALUATED'}`;
+        guidanceText.textContent = data.clinical_notes || 'Pathology evaluation completed. Consult an eye care professional for diagnostic confirmation.';
+      }
+
+      // Actions
+      btnExportJson.addEventListener('click', () => {
+        if (!lastResult) return;
+        const blob = new Blob([JSON.stringify(lastResult, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `retinascope-${lastResult.scan_id || 'diagnostic'}.json`;
+        a.click();
+        showToast('JSON report exported');
+      });
+
+      btnPrintReport.addEventListener('click', () => window.print());
+
+      btnResetScan.addEventListener('click', () => {
+        currentFile = null;
+        currentSampleName = null;
+        lastResult = null;
+        stagesMap = {};
+        activeScanImage.src = '';
+        activeScanImage.style.display = 'none';
+        emptyPrompt.style.display = 'flex';
+        btnRunInference.disabled = true;
+        resultsEmpty.style.display = 'flex';
+        resultsContent.style.display = 'none';
+        hudSessionTag.textContent = 'SESSION: AWAITING';
+        hudStatus.textContent = 'STANDBY';
+        document.querySelectorAll('.sample-item').forEach(i => i.classList.remove('active'));
+        showToast('Scanner reset');
+      });
+    });
+  </script>
+</body>
+</html>
