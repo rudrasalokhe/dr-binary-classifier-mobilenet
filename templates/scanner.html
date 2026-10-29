@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,8 +87,17 @@
         }
 
         @keyframes pulseDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.85);
+            }
         }
 
         .btn {
@@ -120,6 +130,7 @@
             background: #fdf098;
             color: #000;
         }
+
         .btn.yellow:hover {
             background: #000;
             color: #fff;
@@ -183,6 +194,7 @@
         .sample-list::-webkit-scrollbar {
             width: 5px;
         }
+
         .sample-list::-webkit-scrollbar-thumb {
             background-color: #ccc;
             border-radius: 10px;
@@ -210,6 +222,7 @@
             background: #000;
             color: #fff;
         }
+
         .sample-item.active .sample-info p {
             color: #aaa;
         }
@@ -237,11 +250,30 @@
             flex-shrink: 0;
         }
 
-        .tag.normal { background: #e8f5e9; color: #2e7d32; }
-        .tag.dr { background: #ffebee; color: #c62828; }
-        .tag.glaucoma { background: #fff8e1; color: #f57f17; }
-        .tag.amd { background: #e3f2fd; color: #1565c0; }
-        .tag.cataract { background: #f3e5f5; color: #6a1b9a; }
+        .tag.normal {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .tag.dr {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .tag.glaucoma {
+            background: #fff8e1;
+            color: #f57f17;
+        }
+
+        .tag.amd {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .tag.cataract {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
 
         /* Center Panel - HUD */
         .hud-area {
@@ -291,7 +323,8 @@
         /* Animated Laser Scanline */
         .hud-scanline {
             position: absolute;
-            left: 0; right: 0;
+            left: 0;
+            right: 0;
             height: 3px;
             background: linear-gradient(90deg, transparent, #24d16f, #00d4ff, transparent);
             box-shadow: 0 0 15px #24d16f, 0 0 30px #00d4ff;
@@ -299,13 +332,20 @@
             opacity: 0;
             pointer-events: none;
         }
+
         .hud-scanline.scanning {
             opacity: 1;
             animation: laserScan 1.6s ease-in-out infinite alternate;
         }
+
         @keyframes laserScan {
-            0% { top: 4%; }
-            100% { top: 96%; }
+            0% {
+                top: 4%;
+            }
+
+            100% {
+                top: 96%;
+            }
         }
 
         /* Floating Mathematical Filter Badge */
@@ -330,6 +370,7 @@
             pointer-events: none;
             transition: all 0.2s ease;
         }
+
         .hud-filter-banner .formula-math {
             color: #fdf098;
             font-weight: 700;
@@ -372,6 +413,7 @@
             cursor: pointer;
             transition: transform 0.15s ease;
         }
+
         .upload-circle:hover {
             transform: scale(1.08);
         }
@@ -394,7 +436,10 @@
             padding-bottom: 2px;
             flex-shrink: 0;
         }
-        .layer-tabs::-webkit-scrollbar { display: none; }
+
+        .layer-tabs::-webkit-scrollbar {
+            display: none;
+        }
 
         .layer-tab {
             border: 1.5px solid #000;
@@ -408,10 +453,12 @@
             color: #555;
             transition: all 0.15s ease;
         }
+
         .layer-tab:hover {
             background: #fdf098;
             color: #000;
         }
+
         .layer-tab.active {
             background: #000;
             color: #fff;
@@ -492,8 +539,15 @@
             overflow-y: auto;
             padding-right: 4px;
         }
-        .diagnostic-result::-webkit-scrollbar { width: 5px; }
-        .diagnostic-result::-webkit-scrollbar-thumb { background: #bbb; border-radius: 10px; }
+
+        .diagnostic-result::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .diagnostic-result::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 10px;
+        }
 
         .primary-card {
             background: #fff;
@@ -536,6 +590,7 @@
             border-radius: 10px;
             padding: 8px 10px;
         }
+
         .bio-title {
             font-size: 0.64rem;
             font-weight: 700;
@@ -543,12 +598,14 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
+
         .bio-val {
             font-size: 0.95rem;
             font-weight: 700;
             margin-top: 2px;
             color: #111;
         }
+
         .bio-ref {
             font-size: 0.62rem;
             color: #0b6b38;
@@ -574,12 +631,14 @@
         .prob-item {
             font-size: 0.7rem;
         }
+
         .prob-header {
             display: flex;
             justify-content: space-between;
             font-weight: 600;
             margin-bottom: 2px;
         }
+
         .prob-track {
             height: 5px;
             background: #e8e4d9;
@@ -587,6 +646,7 @@
             border-radius: 10px;
             overflow: hidden;
         }
+
         .prob-fill {
             height: 100%;
             background: #444;
@@ -616,20 +676,24 @@
                 height: auto;
                 overflow-y: auto;
             }
+
             body {
                 height: auto;
                 overflow: auto;
             }
+
             .hud-area {
                 min-height: 340px;
             }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Hidden file input for file picker -->
-    <input type="file" id="file-picker" accept="image/*" style="display: none;" onchange="handleFileUpload(this.files[0])">
+    <input type="file" id="file-picker" accept="image/*" style="display: none;"
+        onchange="handleFileUpload(this.files[0])">
 
     <!-- Top Navigation -->
     <nav class="navbar">
@@ -640,9 +704,10 @@
                 <span>Digital Image Processing (DIP) & Ophthalmic Feature Extraction Suite</span>
             </div>
         </a>
-        
+
         <div class="status-pill">
-            <span class="status-indicator">●</span> CORE: CLASSICAL OPENCV DIP ENGINE | SECONDARY BASELINE: MOBILENETV2 (CROSS-VERIFIED)
+            <span class="status-indicator">●</span> CORE: CLASSICAL OPENCV DIP ENGINE | SECONDARY BASELINE: MOBILENETV2
+            (CROSS-VERIFIED)
         </div>
 
         <a href="/" class="btn">← Back to Home</a>
@@ -650,19 +715,22 @@
 
     <!-- Main App Layout -->
     <div class="dashboard-grid">
-        
+
         <!-- Left Column: Benchmark Samples -->
         <div class="card bg-cream">
             <div class="card-header">
                 Fundus Verification Dataset
                 <span class="badge" id="samples-count-badge">15 Scans</span>
             </div>
-            <p style="font-size: 0.75rem; color: #555; margin-bottom: 10px; line-height: 1.35;">Select a benchmark or upload your own real patient fundus scan:</p>
+            <p style="font-size: 0.75rem; color: #555; margin-bottom: 10px; line-height: 1.35;">Select a benchmark or
+                upload your own real patient fundus scan:</p>
 
-            <button class="btn yellow" style="width: 100%; margin-bottom: 12px; justify-content: center; font-size: 0.82rem; padding: 8px 16px;" onclick="document.getElementById('file-picker').click()">
+            <button class="btn yellow"
+                style="width: 100%; margin-bottom: 12px; justify-content: center; font-size: 0.82rem; padding: 8px 16px;"
+                onclick="document.getElementById('file-picker').click()">
                 📁 Upload Custom Fundus Photo
             </button>
-            
+
             <div class="sample-list" id="sample-list-container">
                 <!-- 15 Curated Benchmarks -->
                 <div class="sample-item" onclick="loadBenchmark('Normal_1.png', this)">
@@ -793,28 +861,31 @@
                 Digital Image Processing (DIP) Pipeline HUD
                 <span class="badge" id="hud-session-badge">SESSION: AWAITING</span>
             </div>
-            
+
             <div class="hud-area" id="hud-dropzone" onclick="triggerPicker(event)">
                 <!-- Laser scanline element -->
                 <div id="hud-scanline" class="hud-scanline"></div>
 
                 <!-- Live Filter Stream Terminal overlay -->
                 <div id="hud-filter-terminal" class="hud-filter-terminal">
-                    <div id="term-step-1">▶ [DIP 1/5] Extracting Green Spectrum (540–570nm) for Hemoglobin Absorption...</div>
+                    <div id="term-step-1">▶ [DIP 1/5] Extracting Green Spectrum (540–570nm) for Hemoglobin Absorption...
+                    </div>
                     <div id="term-step-2">▶ [DIP 2/5] Subtracting Low-Pass Gaussian Illumination (σ=30)...</div>
                     <div id="term-step-3">▶ [DIP 3/5] Applying Adaptive CLAHE Equalizer (8×8 Grid, Clip=2.5)...</div>
                     <div id="term-step-4">▶ [DIP 4/5] Executing White Top-Hat Morphology: WTH(I) = I - (I ∘ B)...</div>
-                    <div id="term-step-5">▶ [DIP 5/5] Computing 2D Laplacian Variance (∇²I) & ONH Cup-to-Disc Ratio...</div>
+                    <div id="term-step-5">▶ [DIP 5/5] Computing 2D Laplacian Variance (∇²I) & ONH Cup-to-Disc Ratio...
+                    </div>
                 </div>
 
                 <div class="hud-top-bar">
                     <span id="hud-status-text">STANDBY</span>
                     <span id="hud-fov-text" style="color: #666;">FOV: --</span>
                 </div>
-                
+
                 <div id="hud-placeholder" style="display: flex; flex-direction: column; align-items: center;">
                     <div class="upload-circle">↑</div>
-                    <h3 style="font-weight: 500; font-size: 1.15rem; margin-bottom: 6px;">Drop Fundus Photograph Here</h3>
+                    <h3 style="font-weight: 500; font-size: 1.15rem; margin-bottom: 6px;">Drop Fundus Photograph Here
+                    </h3>
                     <p style="font-size: 0.78rem; color: #888;">Or click to select an ophthalmic scan from disk</p>
                 </div>
 
@@ -835,18 +906,24 @@
 
             <!-- 7 Image Processing Stage Selectors -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 0.72rem; font-weight: 700; color: #555; text-transform: uppercase;">Image Processing & Feature Extraction Stages:</span>
-                <span id="active-stage-label" style="font-size: 0.72rem; font-weight: 700; color: #24d16f;">01 RAW FUNDUS</span>
+                <span style="font-size: 0.72rem; font-weight: 700; color: #555; text-transform: uppercase;">Image
+                    Processing & Feature Extraction Stages:</span>
+                <span id="active-stage-label" style="font-size: 0.72rem; font-weight: 700; color: #24d16f;">01 RAW
+                    FUNDUS</span>
             </div>
 
             <div class="layer-tabs" id="stage-tabs-container">
                 <div class="layer-tab active" onclick="switchStage('raw', '01 RAW FUNDUS', this)">01 Raw</div>
-                <div class="layer-tab" onclick="switchStage('green', '02 GREEN CHANNEL (SPECTRAL)', this)">02 Green</div>
+                <div class="layer-tab" onclick="switchStage('green', '02 GREEN CHANNEL (SPECTRAL)', this)">02 Green
+                </div>
                 <div class="layer-tab" onclick="switchStage('fov_mask', '03 FOV APERTURE MASK', this)">03 FOV Mask</div>
                 <div class="layer-tab" onclick="switchStage('clahe', '04 CLAHE EQUALIZATION', this)">04 CLAHE</div>
-                <div class="layer-tab" onclick="switchStage('morphology', '05 VESSELS (TOP-HAT MORPHOLOGY)', this)">05 Vessels (Top-Hat)</div>
-                <div class="layer-tab" onclick="switchStage('optic_disc', '06 OPTIC DISC & CUP (CDR)', this)">06 Optic Disc (CDR)</div>
-                <div class="layer-tab" onclick="switchStage('lesions', '07 LESION MAP (SPECTRAL ABSORPTION)', this)">07 Lesion Map</div>
+                <div class="layer-tab" onclick="switchStage('morphology', '05 VESSELS (TOP-HAT MORPHOLOGY)', this)">05
+                    Vessels (Top-Hat)</div>
+                <div class="layer-tab" onclick="switchStage('optic_disc', '06 OPTIC DISC & CUP (CDR)', this)">06 Optic
+                    Disc (CDR)</div>
+                <div class="layer-tab" onclick="switchStage('lesions', '07 LESION MAP (SPECTRAL ABSORPTION)', this)">07
+                    Lesion Map</div>
             </div>
 
             <!-- Live DIP Kernel & Matrix Inspector Panel -->
@@ -864,7 +941,9 @@
                         &nbsp;&nbsp;[0,0,1,1,1,0,0] ]
                     </div>
                     <div class="kernel-math-desc" id="inspector-math-desc">
-                        <strong>Mathematical Morphology:</strong> Computes the difference between the CLAHE image and its opening with elliptical structuring element $B$: <code>WTH(I) = I - (I ∘ B)</code> to segment microvessels.
+                        <strong>Mathematical Morphology:</strong> Computes the difference between the CLAHE image and
+                        its opening with elliptical structuring element $B$: <code>WTH(I) = I - (I ∘ B)</code> to
+                        segment microvessels.
                     </div>
                 </div>
             </div>
@@ -876,27 +955,31 @@
                 DIP Biomarkers & Quantitative Pathology
                 <span class="badge" id="hud-latency-badge" style="background: #fff;">LATENCY: --</span>
             </div>
-            
+
             <!-- Empty state when no scan evaluated -->
             <div class="empty-state" id="empty-state-view">
-                <div style="width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; margin-bottom: 12px; background: #fff;">
+                <div
+                    style="width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; margin-bottom: 12px; background: #fff;">
                     <span style="font-size: 1.2rem; font-weight: 700;">📐</span>
                 </div>
                 <h3>Awaiting Fundus Input</h3>
-                <p>Select any benchmark scan on the left or drop an image into the HUD to compute mathematical feature vectors, kernel responses, and diagnostic metrics.</p>
+                <p>Select any benchmark scan on the left or drop an image into the HUD to compute mathematical feature
+                    vectors, kernel responses, and diagnostic metrics.</p>
             </div>
 
             <!-- Populated diagnostic results view -->
             <div class="diagnostic-result" id="diagnostic-results-view">
-                
+
                 <!-- Primary DIP Diagnosis -->
                 <div class="primary-card">
-                    <div style="font-size: 0.68rem; font-weight: 700; color: #777; text-transform: uppercase; margin-bottom: 2px;" id="res-scan-id">SCAN ID: --</div>
+                    <div style="font-size: 0.68rem; font-weight: 700; color: #777; text-transform: uppercase; margin-bottom: 2px;"
+                        id="res-scan-id">SCAN ID: --</div>
                     <div class="primary-condition">
                         <span id="res-pred-class">Normal</span>
                         <span class="conf-badge" id="res-conf-badge">98.4%</span>
                     </div>
-                    <div style="font-size: 0.74rem; font-weight: 600; color: #333;" id="res-severity-tag">DIP Verdict: Healthy Ophthalmic Morphology</div>
+                    <div style="font-size: 0.74rem; font-weight: 600; color: #333;" id="res-severity-tag">DIP Verdict:
+                        Healthy Ophthalmic Morphology</div>
                 </div>
 
                 <!-- Mathematical Biomarkers Front & Center -->
@@ -930,43 +1013,63 @@
 
                 <!-- Secondary Baseline ML Validation Card -->
                 <div class="secondary-baseline-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <span style="font-size: 0.7rem; font-weight: 700; color: #444; text-transform: uppercase;">Secondary Baseline: MobileNetV2 (CNN)</span>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span
+                            style="font-size: 0.7rem; font-weight: 700; color: #444; text-transform: uppercase;">Secondary
+                            Baseline: MobileNetV2 (CNN)</span>
                         <span class="badge" style="background: #fff; font-size: 0.62rem;">CROSS-CHECK</span>
                     </div>
-                    <p style="font-size: 0.66rem; color: #666; margin-bottom: 6px; line-height: 1.25;">Pre-trained neural classifier used strictly as a statistical secondary comparison to cross-validate our DIP feature extractions:</p>
+                    <p style="font-size: 0.66rem; color: #666; margin-bottom: 6px; line-height: 1.25;">Pre-trained
+                        neural classifier used strictly as a statistical secondary comparison to cross-validate our DIP
+                        feature extractions:</p>
 
                     <div class="prob-bar-group">
                         <div class="prob-item">
                             <div class="prob-header"><span>Normal</span><span id="p-Normal">0%</span></div>
-                            <div class="prob-track"><div class="prob-fill" id="bar-Normal" style="width: 0%;"></div></div>
+                            <div class="prob-track">
+                                <div class="prob-fill" id="bar-Normal" style="width: 0%;"></div>
+                            </div>
                         </div>
                         <div class="prob-item">
                             <div class="prob-header"><span>Glaucoma</span><span id="p-Glaucoma">0%</span></div>
-                            <div class="prob-track"><div class="prob-fill" id="bar-Glaucoma" style="width: 0%;"></div></div>
+                            <div class="prob-track">
+                                <div class="prob-fill" id="bar-Glaucoma" style="width: 0%;"></div>
+                            </div>
                         </div>
                         <div class="prob-item">
-                            <div class="prob-header"><span>Diabetic Retinopathy</span><span id="p-Diabetic_Retinopathy">0%</span></div>
-                            <div class="prob-track"><div class="prob-fill" id="bar-Diabetic_Retinopathy" style="width: 0%;"></div></div>
+                            <div class="prob-header"><span>Diabetic Retinopathy</span><span
+                                    id="p-Diabetic_Retinopathy">0%</span></div>
+                            <div class="prob-track">
+                                <div class="prob-fill" id="bar-Diabetic_Retinopathy" style="width: 0%;"></div>
+                            </div>
                         </div>
                         <div class="prob-item">
-                            <div class="prob-header"><span>AMD (Macular Degeneration)</span><span id="p-AMD">0%</span></div>
-                            <div class="prob-track"><div class="prob-fill" id="bar-AMD" style="width: 0%;"></div></div>
+                            <div class="prob-header"><span>AMD (Macular Degeneration)</span><span id="p-AMD">0%</span>
+                            </div>
+                            <div class="prob-track">
+                                <div class="prob-fill" id="bar-AMD" style="width: 0%;"></div>
+                            </div>
                         </div>
                         <div class="prob-item">
                             <div class="prob-header"><span>Cataract</span><span id="p-Cataract">0%</span></div>
-                            <div class="prob-track"><div class="prob-fill" id="bar-Cataract" style="width: 0%;"></div></div>
+                            <div class="prob-track">
+                                <div class="prob-fill" id="bar-Cataract" style="width: 0%;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="guidance-box">
-                    <div style="font-weight: 700; margin-bottom: 2px; text-transform: uppercase; font-size: 0.7rem;">Clinical Triage & Findings:</div>
-                    <div id="res-guidance-notes">Fundus photograph shows unremarkable vascular and macular architecture. Schedule routine 12-month follow-up.</div>
+                    <div style="font-weight: 700; margin-bottom: 2px; text-transform: uppercase; font-size: 0.7rem;">
+                        Clinical Triage & Findings:</div>
+                    <div id="res-guidance-notes">Fundus photograph shows unremarkable vascular and macular architecture.
+                        Schedule routine 12-month follow-up.</div>
                 </div>
 
                 <div class="action-btns">
-                    <button class="btn small yellow" style="flex: 1;" onclick="exportReportJSON()">Export JSON Metrics</button>
+                    <button class="btn small yellow" style="flex: 1;" onclick="exportReportJSON()">Export JSON
+                        Metrics</button>
                     <button class="btn small" style="flex: 1;" onclick="window.print()">Print DIP Report</button>
                 </div>
             </div>
@@ -1112,7 +1215,7 @@
                 }
 
                 currentDiagnosticData = data;
-                
+
                 // Allow laser sweep animation to run for 350ms
                 setTimeout(() => {
                     stopScanningAnimation();
@@ -1146,7 +1249,7 @@
             document.getElementById('hud-session-badge').textContent = "EVALUATED: " + data.predicted_class;
             document.getElementById('hud-status-text').textContent = "DIP VERDICT: " + data.predicted_class;
             document.getElementById('hud-latency-badge').textContent = data.inference_time_ms + " MS";
-            
+
             const bio = data.biomarkers || {};
             document.getElementById('hud-fov-text').textContent = "FOV: " + (bio.fov_coverage_pct || "84") + "%";
 
@@ -1178,7 +1281,7 @@
             document.getElementById('bio-cdr').textContent = bio.cup_to_disc_ratio !== undefined ? bio.cup_to_disc_ratio : "—";
             document.getElementById('bio-clarity').textContent = bio.laplacian_clarity !== undefined ? bio.laplacian_clarity.toFixed(1) : "—";
             document.getElementById('bio-vad').textContent = bio.vessel_density_pct !== undefined ? bio.vessel_density_pct + "%" : "—";
-            
+
             const totalLesionPct = ((bio.bright_lesions_pct || 0) + (bio.dark_lesions_pct || 0)).toFixed(2);
             document.getElementById('bio-lesion').textContent = totalLesionPct + "%";
 
@@ -1192,10 +1295,10 @@
             if (tabEl) tabEl.classList.add('active');
 
             document.getElementById('active-stage-label').textContent = stageLabel;
-            
+
             // Update the live mathematical filter banner and kernel inspector
-            const filterDef = STAGE_FILTER_DEFINITIONS[stageKey] || { 
-                title: "OPERATOR:", 
+            const filterDef = STAGE_FILTER_DEFINITIONS[stageKey] || {
+                title: "OPERATOR:",
                 formula: "STANDARD OPERATOR",
                 kernelTitle: "Active Kernel",
                 kernelSize: "MATRIX",
@@ -1231,4 +1334,5 @@
         }
     </script>
 </body>
+
 </html>
